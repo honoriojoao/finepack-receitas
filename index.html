@@ -609,22 +609,39 @@ const paramsDef=[
 
 // ── API ──────────────────────────────────────────────────
 
-async function apiGet(action, params='') {
-  const res = await fetch(`${API}?action=${action}${params}`);
-  const data = await res.json();
-  if (data.status === 'erro') throw new Error(data.mensagem);
-  return data.data;
+function apiGet(action, extraParams='') {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    window[cb] = (data) => {
+      delete window[cb];
+      document.getElementById(cb)?.remove();
+      if (data.status === 'erro') reject(new Error(data.mensagem));
+      else resolve(data.data);
+    };
+    const script = document.createElement('script');
+    script.id = cb;
+    script.src = `${API}?action=${action}${extraParams}&callback=${cb}`;
+    script.onerror = () => { delete window[cb]; reject(new Error('Erro de conexão')); };
+    document.head.appendChild(script);
+  });
 }
 
-async function apiPost(body) {
-  const res = await fetch(API, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(body)
+function apiPost(body) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    window[cb] = (data) => {
+      delete window[cb];
+      document.getElementById(cb)?.remove();
+      if (data.status === 'erro') reject(new Error(data.mensagem));
+      else resolve(data.data);
+    };
+    const params = encodeURIComponent(JSON.stringify(body));
+    const script = document.createElement('script');
+    script.id = cb;
+    script.src = `${API}?action=${body.action}&body=${params}&callback=${cb}`;
+    script.onerror = () => { delete window[cb]; reject(new Error('Erro de conexão')); };
+    document.head.appendChild(script);
   });
-  const data = await res.json();
-  if (data.status === 'erro') throw new Error(data.mensagem);
-  return data.data;
 }
 
 // ── CARREGAR RECEITAS ────────────────────────────────────
