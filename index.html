@@ -422,16 +422,43 @@ textarea{resize:none;line-height:1.5;width:100%}
         <div class="hg" id="rep-id-grid"></div>
         <div><div class="fl">Data / hora</div><div class="fv" style="font-size:12px;margin-top:2px" id="rep-dt"></div></div>
       </div>
-      <div class="card">
-        <div class="sl">Viscosidade e secagem por estação</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">Registre os valores reais. Tolerância: viscosidade ±1 s · secagem ±20 s.</div>
-        <div id="tintas-rep"></div>
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:var(--rad);background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-palette" style="font-size:17px;color:#185FA5" aria-hidden="true"></i></div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">Viscosidade e secagem</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Tolerância: viscosidade ±1 s · secagem ±20 s</div></div>
+        </div>
+        <div style="padding:12px 14px" id="tintas-rep"></div>
       </div>
-      <div class="card">
-        <div class="sl">Parâmetros da máquina</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">Registre os valores reais de cada parâmetro.</div>
-        <div class="prg"><div class="prf" id="rpg" style="width:0%"></div></div>
-        <div id="params-rep"></div>
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:var(--rad);background:#FAEEDA;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-tag" style="font-size:17px;color:#854F0B" aria-hidden="true"></i></div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">ID da Camisa</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Uma por estação, na ordem</div></div>
+        </div>
+        <div style="padding:12px 14px" id="rep-camisa-rows"></div>
+      </div>
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:var(--rad);background:#EAF3DE;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-adjustments-horizontal" style="font-size:17px;color:#3B6D11" aria-hidden="true"></i></div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">Pressão do Rolo</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Valor por estação</div></div>
+        </div>
+        <div style="padding:12px 14px" id="rep-rolo-rows"></div>
+      </div>
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:var(--rad);background:#FCEBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-flame" style="font-size:17px;color:#A32D2D" aria-hidden="true"></i></div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">Estufa por estação</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Temperatura em °C</div></div>
+        </div>
+        <div style="padding:12px 14px" id="rep-estufa-rows"></div>
+      </div>
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:var(--rad);background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-tool" style="font-size:17px;color:var(--text2)" aria-hidden="true"></i></div>
+          <div><div style="font-size:13px;font-weight:600;color:var(--text)">Parâmetros da máquina</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Registre os valores reais</div></div>
+        </div>
+        <div style="padding:12px 14px">
+          <div class="prg"><div class="prf" id="rpg" style="width:0%"></div></div>
+          <div id="params-rep"></div>
+        </div>
       </div>
       <div class="nr">
         <button class="bnp" onclick="ir('s-rec')"><i class="ti ti-x"></i> Cancelar</button>
@@ -766,6 +793,12 @@ function rRep() {
       : `<input class="param-inp${isInf?' inf':''}" id="pinp-${p.id}" type="text" inputmode="decimal" oninput="chkP('${p.id}','${refVal}')">`;
     return `<div class="param-row"><div class="param-top"><div class="param-lbl">${p.lbl}${p.un?`<span class="un">(${p.un})</span>`:''}</div>${inp}</div><div id="jprow-${p.id}" style="display:none" class="just-inp"><label><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px"></i> Fora do especificado — justifique</label><textarea id="jparam-${p.id}" rows="2" placeholder="Justifique..."></textarea></div></div>`;
   }).join('');
+
+  // Popular seções de camisa, rolo e estufa
+  const repRowHtml = (prefix, placeholder, unit) => tintas.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)"><div class="nc">${t.ESTACAO}</div><div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div><div style="display:flex;align-items:center;gap:4px"><input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)">${unit?`<span style="font-size:11px;color:var(--text3)">${unit}</span>`:''}</div></div>`).join('').replace(/border-bottom[^"]*"([^<]*<\/div><\/div>)$/,'$1');
+  const rc=document.getElementById('rep-camisa-rows');if(rc)rc.innerHTML=repRowHtml('repcamisa','Ex: 22 E1','');
+  const rr=document.getElementById('rep-rolo-rows');if(rr)rr.innerHTML=repRowHtml('reprolo','1','');
+  const re=document.getElementById('rep-estufa-rows');if(re)re.innerHTML=repRowHtml('repesufa','80','°C');
   uPrg();
 }
 
@@ -786,7 +819,7 @@ function uBtn(){
   const tintas=r.tintas||[];
   const operOk=document.getElementById('oper-inp')?.value.trim()!=='';
   const opOk=document.getElementById('op-inp')?.value.trim()!=='';
-  const tOk=tintas.every(t=>document.getElementById('visc-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('sec-'+t.ESTACAO)?.value.trim()!=='');
+  const tOk=tintas.every(t=>document.getElementById('visc-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('sec-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('repcamisa-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('reprolo-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('repesufa-'+t.ESTACAO)?.value.trim()!=='');
   const pOk=paramsDef.filter(p=>p.tipo!=='info').every(p=>document.getElementById('pinp-'+p.id)?.value.trim()!=='');
   const jOk=getDvF().every(d=>d.just.trim()!=='');
   const ok=operOk&&opOk&&tOk&&pOk&&jOk;
@@ -928,7 +961,9 @@ async function salvarRepeticao(aprovador) {
   }));
 
   try {
-    await apiPost({action:'salvarRepeticao',idReceita:recIdx,opProducao:op,operador:oper,aprovador,temDesvio:dvs.length>0,desvios,pendencias:pends});
+    const tintas2=r.tintas||[];
+    const complementos=tintas2.map(t=>({estacao:t.ESTACAO,idCamisa:document.getElementById('repcamisa-'+t.ESTACAO)?.value||'',pressaoRolo:document.getElementById('reprolo-'+t.ESTACAO)?.value||'',tempEstufa:document.getElementById('repesufa-'+t.ESTACAO)?.value||''}));
+    await apiPost({action:'salvarRepeticao',idReceita:recIdx,opProducao:op,operador:oper,aprovador,temDesvio:dvs.length>0,desvios,pendencias:pends,complementos});
     if(altCnt>0)await carregarPendencias();
     await carregarReceitas();
     const rows=[{l:'Cód. PA',v:r.COD_PA},{l:'OP',v:op},{l:'Operador',v:oper},{l:'Aprovador',v:aprovador}];
