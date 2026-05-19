@@ -853,7 +853,7 @@ async function salvarNovaReceita(aprovador) {
   const cli=document.getElementById('n-cli').value,cod=document.getElementById('n-cod').value;
   const tintas=Array.from(document.querySelectorAll('.tbloco')).map(tb=>{
     const ins=tb.querySelectorAll('input');const sel=tb.querySelectorAll('select');
-    return{estacao:parseInt(tb.querySelector('.nc').textContent),codTinta:ins[0]?.value||'',nomeCor:ins[1]?.value||'',idCamisa:ins[2]?.value||'',viscosidade:parseFloat(ins[3]?.value)||0,pressaoRolo:ins[4]?.value||'',secagemMin:parseInt(ins[5]?.value)||0,secagemSeg:parseInt(ins[6]?.value)||0,tempEstufa:ins[7]?.value||'',preHot:document.getElementById('hon-1')?.className.includes('ton')||false,preHotTemp:document.getElementById('hti-1')?.value||'',posHot:document.getElementById('hon-9')?.className.includes('ton')||false,posHotTemp:document.getElementById('hti-9')?.value||''};
+    const secRaw=(ins[5]?.value||'0:0').split(':');const secM=parseInt(secRaw[0])||0,secS=parseInt(secRaw[1])||0;return{estacao:parseInt(tb.querySelector('.nc').textContent),codTinta:ins[0]?.value||'',nomeCor:ins[1]?.value||'',idCamisa:ins[2]?.value||'',viscosidade:parseFloat(ins[3]?.value)||0,pressaoRolo:ins[4]?.value||'',secagemMin:secM,secagemSeg:secS,tempEstufa:ins[6]?.value||'',preHot:document.getElementById('hon-1')?.className.includes('ton')||false,preHotTemp:document.getElementById('hti-1')?.value||'',posHot:document.getElementById('hon-9')?.className.includes('ton')||false,posHotTemp:document.getElementById('hti-9')?.value||''};
   });
   const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
   const parametros={tensaoFreio:pbInputs[0]?.value||'',pressaoCompactador:pbInputs[1]?.value||'',avancoCR:pbInputs[2]?.value||'',velocidade:pbInputs[3]?.value||'',taxaReducao:pbInputs[4]?.value||'',pressaoFaca:pbInputs[5]?.value||'',tensaoRebobinador:pbInputs[6]?.value||'',avanco:pbInputs[7]?.value||'',posicaoCompactador:pbInputs[8]?.value||'',tempAmbiente:pbInputs[9]?.value||'',larguraFilme:pbInputs[10]?.value||'',pressaoCilBorracha:pbInputs[11]?.value||''};
@@ -1075,8 +1075,7 @@ function addT(n){
   <div class="tg">
     <div><label>Viscosidade (s)</label><input type="text" inputmode="decimal"></div>
     <div><label>Pressão Rolo</label><input type="text" inputmode="decimal"></div>
-    <div><label>Secagem — min</label><input type="text" inputmode="numeric"></div>
-    <div><label>Secagem — s</label><input type="text" inputmode="numeric"></div>
+    <div style="grid-column:span 2"><label>Secagem (min:seg — ex: 1:30)</label><input type="text" inputmode="numeric" placeholder="0:40" style="width:100%"></div>
     <div><label>Estufa (°C)</label><input type="text" inputmode="numeric"></div>
   </div>
   ${isF||is9?`<div class="hsec"><div class="hshd"><span class="hsbdg"><i class="ti ti-flame"></i>${isF?'PRÉ HOT':'PÓS HOT'}</span><div class="htog"><button class="to tof" id="hof-${n}" onclick="sH(${n},false)">Não</button><button class="to" id="hon-${n}" onclick="sH(${n},true)">Sim</button></div></div><div class="htr" id="htr-${n}" style="display:none"><span style="font-size:12px;color:var(--text2);flex:1">Temperatura</span><input class="hti" id="hti-${n}" type="text" inputmode="numeric" placeholder="${isF?'80':'65'}"><span style="font-size:12px;color:var(--text2)">°C</span></div></div>`:''}`;
@@ -1097,7 +1096,7 @@ function uSB(cur){const lbls=['Cabeçalho','Tintas','Parâmetros','Revisão'];do
 
 function bRv(){
   const cli=document.getElementById('n-cli').value||'—',cod=document.getElementById('n-cod').value||'—',serv=document.getElementById('n-serv').value||'—',maq=document.getElementById('n-maq').value||'—';
-  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,i)=>{const ins=tb.querySelectorAll('input');return{n:i+1,nome:ins[1]?.value||'—',visc:ins[3]?.value||'—',secm:ins[5]?.value||'0',secs:ins[6]?.value||'0'};});
+  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,i)=>{const ins=tb.querySelectorAll('input');const sr=(ins[5]?.value||'0:0').split(':');return{n:i+1,nome:ins[1]?.value||'—',visc:ins[3]?.value||'—',secm:sr[0]||'0',secs:sr[1]||'0'};});
   document.getElementById('rvw').innerHTML=`<div class="sl" style="margin-bottom:10px">Resumo da receita</div><div class="pb" style="margin-bottom:8px"><div class="pbox"><div class="pl">Cliente</div><div class="pv" style="font-size:13px">${cli}</div></div><div class="pbox"><div class="pl">Cód. PA</div><div class="pv" style="font-size:13px">${cod}</div></div></div><div class="pbox" style="margin-bottom:8px"><div class="pl">Serviço</div><div class="pv" style="font-size:12px;margin-top:3px">${serv}</div></div><div class="pbox" style="margin-bottom:12px"><div class="pl">Máquina</div><div class="pv" style="font-size:13px">${maq}</div></div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">${ts.length} estação(ões)</div>${ts.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)"><div class="nc">${t.n}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div><div style="font-size:11px;color:var(--text3)">${t.visc} s · ${secStr(parseInt(t.secm),parseInt(t.secs))}</div></div>`).join('')}`;
 }
 
