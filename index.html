@@ -349,7 +349,7 @@ textarea{resize:none;line-height:1.5;width:100%}
             <div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500">Pressão Cil. Borracha</label><input type="text" inputmode="numeric" placeholder="200" style="width:100%"></div>
           </div>
         </div>
-        <div class="card"><div class="sl">Observações técnicas</div><textarea rows="4" placeholder="Anotações importantes para o operador..."></textarea></div>
+        <div class="card"><div class="sl">Observações técnicas</div><textarea id="n-obs" rows="4" placeholder="Anotações importantes para o operador..."></textarea></div>
         <div class="nr"><button class="bnp" onclick="nStep(2)"><i class="ti ti-arrow-left"></i> Voltar</button><button class="bnn" onclick="nStep(4)">Revisar <i class="ti ti-arrow-right"></i></button></div>
       </div>
       <div id="ns4" style="display:none">
@@ -1075,7 +1075,7 @@ function addT(n){
   <div class="tg">
     <div><label>Viscosidade (s)</label><input type="text" inputmode="decimal"></div>
     <div><label>Pressão Rolo</label><input type="text" inputmode="decimal"></div>
-    <div style="grid-column:span 2"><label>Secagem (min:seg — ex: 1:30)</label><input type="text" inputmode="numeric" placeholder="0:40" style="width:100%"></div>
+    <div style="grid-column:span 2"><label>Secagem (min:seg — ex: 1:30)</label><input type="text" inputmode="numeric" placeholder="0:40" style="width:90px"></div>
     <div><label>Estufa (°C)</label><input type="text" inputmode="numeric"></div>
   </div>
   ${isF||is9?`<div class="hsec"><div class="hshd"><span class="hsbdg"><i class="ti ti-flame"></i>${isF?'PRÉ HOT':'PÓS HOT'}</span><div class="htog"><button class="to tof" id="hof-${n}" onclick="sH(${n},false)">Não</button><button class="to" id="hon-${n}" onclick="sH(${n},true)">Sim</button></div></div><div class="htr" id="htr-${n}" style="display:none"><span style="font-size:12px;color:var(--text2);flex:1">Temperatura</span><input class="hti" id="hti-${n}" type="text" inputmode="numeric" placeholder="${isF?'80':'65'}"><span style="font-size:12px;color:var(--text2)">°C</span></div></div>`:''}`;
@@ -1123,7 +1123,7 @@ function bRv(){
     {l:'Largura do Filme',v:pbInputs[10]?.value||'—',u:'mm'},
     {l:'Pressão Cil. Borracha',v:pbInputs[11]?.value||'—',u:''},
   ];
-  const obs=document.querySelector('#ns3 textarea')?.value||'';
+  const obs=document.getElementById('n-obs')?.value||'';
   const estufahtml=ts.filter(t=>t.estufa).map(t=>`<div class="er"><div class="en">${t.n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.estufa}°C</div></div>`).join('');
   document.getElementById('rvw').innerHTML=`
     <div class="sl">Identificação</div>
