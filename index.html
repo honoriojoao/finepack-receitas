@@ -1095,9 +1095,52 @@ function nStep(n){
 function uSB(cur){const lbls=['Cabeçalho','Tintas','Parâmetros','Revisão'];document.getElementById('sbw').innerHTML=`<div class="stb">${lbls.map((l,i)=>{const n=i+1,cls=n<cur?'scd':n===cur?'sca':'sci',ic=n<cur?'<i class="ti ti-check" style="font-size:11px"></i>':n;return `<div class="si"><div class="scc ${cls}">${ic}</div><span class="slb ${n===cur?'slba':''}">${l}</span></div>${n<4?'<div class="sse"></div>':''}`}).join('')}</div>`;}
 
 function bRv(){
-  const cli=document.getElementById('n-cli').value||'—',cod=document.getElementById('n-cod').value||'—',serv=document.getElementById('n-serv').value||'—',maq=document.getElementById('n-maq').value||'—';
-  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,i)=>{const ins=tb.querySelectorAll('input');const sr=(ins[5]?.value||'0:0').split(':');return{n:i+1,nome:ins[1]?.value||'—',visc:ins[3]?.value||'—',secm:sr[0]||'0',secs:sr[1]||'0'};});
-  document.getElementById('rvw').innerHTML=`<div class="sl" style="margin-bottom:10px">Resumo da receita</div><div class="pb" style="margin-bottom:8px"><div class="pbox"><div class="pl">Cliente</div><div class="pv" style="font-size:13px">${cli}</div></div><div class="pbox"><div class="pl">Cód. PA</div><div class="pv" style="font-size:13px">${cod}</div></div></div><div class="pbox" style="margin-bottom:8px"><div class="pl">Serviço</div><div class="pv" style="font-size:12px;margin-top:3px">${serv}</div></div><div class="pbox" style="margin-bottom:12px"><div class="pl">Máquina</div><div class="pv" style="font-size:13px">${maq}</div></div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">${ts.length} estação(ões)</div>${ts.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)"><div class="nc">${t.n}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div><div style="font-size:11px;color:var(--text3)">${t.visc} s · ${secStr(parseInt(t.secm),parseInt(t.secs))}</div></div>`).join('')}`;
+  const cli=document.getElementById('n-cli').value||'—';
+  const cod=document.getElementById('n-cod').value||'—';
+  const serv=document.getElementById('n-serv').value||'—';
+  const maq=document.getElementById('n-maq').value||'—';
+  const oper=document.getElementById('n-oper').value||'—';
+  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,idx)=>{
+    const ins=tb.querySelectorAll('input');
+    const n=parseInt(tb.querySelector('.nc').textContent)||idx+1;
+    const sr=(ins[5]?.value||'0:0').split(':');
+    const preHot=n===1&&(document.getElementById('hon-1')?.className.includes('ton')||false);
+    const posHot=n===9&&(document.getElementById('hon-9')?.className.includes('ton')||false);
+    return{n,cod:ins[0]?.value||'',nome:ins[1]?.value||'—',camisa:ins[2]?.value||'',visc:ins[3]?.value||'—',rolo:ins[4]?.value||'',secm:sr[0]||'0',secs:sr[1]||'0',estufa:ins[6]?.value||'',preHot,preTemp:document.getElementById('hti-1')?.value||'',posHot,posTemp:document.getElementById('hti-9')?.value||''};
+  });
+  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
+  const pm=[
+    {l:'Tensão Freio Desbob.',v:pbInputs[0]?.value||'—',u:'N'},
+    {l:'Pressão Compactador',v:pbInputs[1]?.value||'—',u:'Bar'},
+    {l:'Avanço CR',v:pbInputs[2]?.value||'—',u:'N'},
+    {l:'Velocidade',v:pbInputs[3]?.value||'—',u:'m/min'},
+    {l:'Taxa de Redução',v:pbInputs[4]?.value||'—',u:'%'},
+    {l:'Pressão da Faca',v:pbInputs[5]?.value||'—',u:'Bar'},
+    {l:'Tensão Rebobinador',v:pbInputs[6]?.value||'—',u:'N'},
+    {l:'Avanço',v:pbInputs[7]?.value||'—',u:'N'},
+    {l:'Posição Compactador',v:pbInputs[8]?.value||'—',u:''},
+    {l:'Temp. Ambiente',v:pbInputs[9]?.value||'—',u:'°C'},
+    {l:'Largura do Filme',v:pbInputs[10]?.value||'—',u:'mm'},
+    {l:'Pressão Cil. Borracha',v:pbInputs[11]?.value||'—',u:''},
+  ];
+  const obs=document.querySelector('#ns3 textarea')?.value||'';
+  const estufahtml=ts.filter(t=>t.estufa).map(t=>`<div class="er"><div class="en">${t.n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.estufa}°C</div></div>`).join('');
+  document.getElementById('rvw').innerHTML=`
+    <div class="sl">Identificação</div>
+    <div class="hg" style="margin-bottom:8px">
+      <div><div class="fl">Cliente</div><div class="fv fvac">${cli}</div></div>
+      <div><div class="fl">Máquina</div><div class="fv">${maq}</div></div>
+      <div><div class="fl">Cód. PA</div><div class="fv">${cod}</div></div>
+      <div><div class="fl">Operador</div><div class="fv">${oper}</div></div>
+    </div>
+    <div style="margin-bottom:12px"><div class="fl">Serviço</div><div class="fv" style="font-size:12px;margin-top:2px">${serv}</div></div>
+    <div class="sl" style="margin-top:4px">Estações — ${ts.length} tinta${ts.length!==1?'s':''}</div>
+    ${ts.map(t=>`<div class="tr2"><div class="nc">${t.n}</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${t.cod}${t.camisa?' · Camisa: '+t.camisa:''}</div><div class="chips">${t.visc!=='—'?`<div class="chip">Visc. <b>${t.visc} s</b></div>`:''}<div class="chip">Sec. <b>${secStr(parseInt(t.secm),parseInt(t.secs))}</b></div>${t.rolo?`<div class="chip">Rolo <b>${t.rolo}</b></div>`:''}${t.estufa?`<div class="chip cth">Estufa <b>${t.estufa}°C</b></div>`:''}${t.preHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PRÉ HOT <b>${t.preTemp}°C</b></div>`:''}${t.posHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PÓS HOT <b>${t.posTemp}°C</b></div>`:''}</div></div></div>`).join('')}
+    <div class="sl" style="margin-top:12px">Parâmetros da máquina</div>
+    <div class="pb" style="margin-bottom:12px">${pm.map(p=>`<div class="pbox"><div class="pl">${p.l}</div><div class="pv" style="font-size:13px">${p.v}${p.u?' <span class="pu">'+p.u+'</span>':''}</div></div>`).join('')}</div>
+    ${estufahtml?`<div class="sl">Estufas por estação</div>${estufahtml}`:''}
+    ${obs?`<div class="sl" style="margin-top:12px">Observações técnicas</div><div class="oi"><div class="od"></div><div class="ot">${obs}</div></div>`:''}
+  `;
 }
 
 // ── SUCESSO ──────────────────────────────────────────────
