@@ -491,6 +491,7 @@ textarea{resize:none;line-height:1.5;width:100%}
       </div>
       <div class="card"><div class="sl">Viscosidade e secagem — revisão</div><div id="rev-tintas"></div></div>
       <div class="card"><div class="sl">Parâmetros da máquina — revisão</div><div id="rev-params"></div></div>
+      <div class="card" id="rev-complem" style="display:none"></div>
       <div id="alt-banner" style="display:none" class="alt-banner">
         <i class="ti ti-info-circle" style="font-size:18px;color:var(--blue);flex-shrink:0"></i>
         <div><div style="font-size:13px;font-weight:600;color:var(--blue)"><span id="alt-count">0</span> alteração(ões) enviadas para pendência</div><div style="font-size:11px;color:var(--blue);margin-top:1px;opacity:.8">Um segundo supervisor aprovará na tela de Pendências.</div></div>
@@ -857,14 +858,21 @@ function getParamRef(pid, p) {
 function chkComplem(prefix, estacao, ref){
   const i=document.getElementById(prefix+'-'+estacao);
   const j=document.getElementById('jreprow-'+prefix+'-'+estacao);
-  const ji=document.getElementById('jrep-'+prefix+'-'+estacao);
   if(!i||!j)return;
   const v=i.value.trim();
-  if(!v){i.style.border='0.5px solid var(--border2)';i.style.background='var(--card)';i.style.color='var(--text)';j.style.display='none';uBtn();return;}
+  if(!v){
+    i.style.border='0.5px solid var(--border2)';
+    i.style.background='var(--card)';
+    i.style.color='var(--text)';
+    i.dataset.dv='0';
+    j.style.display='none';
+    uBtn();return;
+  }
   const dv=String(v)!==String(ref);
   i.style.border=dv?'0.5px solid var(--red-mid)':'0.5px solid var(--border2)';
   i.style.background=dv?'var(--red-light)':'var(--card)';
   i.style.color=dv?'var(--red)':'var(--text)';
+  i.dataset.dv=dv?'1':'0';
   j.style.display=dv?'block':'none';
   uBtn();
 }
@@ -890,7 +898,7 @@ function uBtn(){
     tintas2.every(t=>{
       const i=document.getElementById(prefix+'-'+t.ESTACAO);
       const j=document.getElementById('jrep-'+prefix+'-'+t.ESTACAO);
-      if(i?.style.borderColor==='var(--red-mid)'||i?.style.background==='var(--red-light)'){
+      if(i?.dataset.dv==='1'){
         return j?.value.trim()!=='';
       }
       return true;
@@ -923,7 +931,7 @@ function getDvF(){
       const i=document.getElementById(prefix+'-'+t.ESTACAO);
       const j=document.getElementById('jrep-'+prefix+'-'+t.ESTACAO);
       const ref=String(refFn(t)||'');
-      if(i&&i.value.trim()&&i.value.trim()!==ref){
+      if(i&&i.dataset.dv==='1'){
         dvs.push({key:`${prefix}-${t.ESTACAO}`,lbl:`Est. ${t.ESTACAO} — ${lbl}`,val:`${i.value}${un?' '+un:''}`,ref:`${ref}${un?' '+un:''}`,just:j?.value||'',tipo:'COMPLEMENTO',tipoAlt:''});
       }
     });
@@ -962,6 +970,33 @@ function irRevisar(){
     const j=document.getElementById('jparam-'+p.id)?.value||'';
     return `<div class="rev-row"><div class="rev-row-top"><div class="rev-lbl">${p.lbl}${p.un?` (${p.un})`:''}</div><div class="rev-right"><span class="rev-ref">Receita: ${refVal}${p.un?' '+p.un:''}</span><span class="rev-real${isDv?' dv':''}">${v}${p.un&&v!=='—'?' '+p.un:''}${isDv?' <span class="rev-dv-pill">Desvio</span>':''}</span></div></div>${isDv?`<div class="rev-just"><div class="rev-just-lbl">Justificativa</div>${j}</div><div class="alt-opts"><button class="alt-btn" id="ao-${p.id}-pont" onclick="selAlt('${p.id}','pont')"><i class="ti ti-refresh"></i>Alteração pontual</button><button class="alt-btn" id="ao-${p.id}-rec" onclick="selAlt('${p.id}','rec')"><i class="ti ti-file-pencil"></i>Alterar na Receita</button></div>`:''}</div>`;
   }).join('');
+  // Renderizar desvios de complementos (rolo, estufa, faca)
+  const r3=receitas.find(x=>String(x.ID)===String(recIdx));
+  const tintas3=Array.isArray(r3?.tintas)?r3.tintas:(r3?.tintas?[r3.tintas]:[]);
+  const compMap2=[
+    {prefix:'reprolo',lbl:'Pressão do Rolo',refFn:t=>t.PRESSAO_ROLO,un:''},
+    {prefix:'repesufa',lbl:'Estufa',refFn:t=>t.TEMP_ESTUFA,un:'°C'},
+    {prefix:'repfaca',lbl:'Pressão da Faca',refFn:t=>t.PRESSAO_FACA,un:'Bar'},
+  ];
+  const compDesvios=[];
+  compMap2.forEach(({prefix,lbl,refFn,un})=>{
+    tintas3.forEach(t=>{
+      const i=document.getElementById(prefix+'-'+t.ESTACAO);
+      if(i?.dataset.dv==='1'){
+        const j=document.getElementById('jrep-'+prefix+'-'+t.ESTACAO);
+        compDesvios.push({key:`${prefix}-${t.ESTACAO}`,lbl:`Est. ${t.ESTACAO} — ${lbl}`,val:`${i.value}${un?' '+un:''}`,ref:`${String(refFn(t)||'—')}${un?' '+un:''}`,just:j?.value||''});
+      }
+    });
+  });
+  const revCompEl=document.getElementById('rev-complem');
+  if(revCompEl){
+    if(compDesvios.length>0){
+      revCompEl.style.display='block';
+      revCompEl.innerHTML=`<div class="sl">Pressão do Rolo / Estufa / Faca — revisão</div>${compDesvios.map(d=>`<div class="rev-row"><div class="rev-row-top"><div class="rev-lbl">${d.lbl}</div><div class="rev-right"><span class="rev-ref">Receita: ${d.ref}</span><span class="rev-real dv">${d.val} <span class="rev-dv-pill">Desvio</span></span></div></div><div class="rev-just"><div class="rev-just-lbl">Justificativa</div>${d.just}</div><div class="alt-opts"><button class="alt-btn" id="ao-${d.key}-pont" onclick="selAlt('${d.key}','pont')"><i class="ti ti-refresh"></i>Alteração pontual</button><button class="alt-btn" id="ao-${d.key}-rec" onclick="selAlt('${d.key}','rec')"><i class="ti ti-file-pencil"></i>Alterar na Receita</button></div></div>`).join('')}`;
+    } else {
+      revCompEl.style.display='none';
+    }
+  }
   uAltBanner();uRevPinBtn();ir('s-rev');
 }
 
