@@ -802,7 +802,7 @@ function rRep() {
           <div id="vtv-${t.ESTACAO}" style="display:none" class="just-inp"><label><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px"></i> Fora do especificado</label><textarea id="jvisc-${t.ESTACAO}" rows="2" placeholder="Justifique..."></textarea></div>
         </div>
         <div class="vf"><label>Secagem (min:seg)</label>
-          <div class="vi-row"><input class="vi" id="sec-${t.ESTACAO}" type="text" inputmode="numeric" placeholder="0:00" style="width:70px" oninput="chkSec('${t.ESTACAO}',${t.SECAGEM_MIN||0},${t.SECAGEM_SEG||0})"><span class="vi-sep">min:s</span></div>
+          <div class="vi-row"><input class="vi" id="sec-${t.ESTACAO}" type="text" inputmode="numeric" placeholder="0:00" style="width:70px" oninput="chkSec('${t.ESTACAO}',${t.SECAGEM_MIN||0},${t.SECAGEM_SEG||0})" onfocus="if(!this.value)this.value='0:'" onblur="if(this.value==='0:')this.value=''"><span class="vi-sep">min:s</span></div>
           <div id="vts-${t.ESTACAO}" style="display:none" class="just-inp"><label><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px"></i> Fora do especificado</label><textarea id="jsec-${t.ESTACAO}" rows="2" placeholder="Justifique..."></textarea></div>
         </div>
       </div>
@@ -819,17 +819,54 @@ function rRep() {
   }).join('');
 
   // Popular seções de camisa, rolo e estufa
-  const repRowHtml = (prefix, placeholder, unit) => tintas.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)"><div class="nc">${t.ESTACAO}</div><div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div><div style="display:flex;align-items:center;gap:4px"><input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)">${unit?`<span style="font-size:11px;color:var(--text3)">${unit}</span>`:''}</div></div>`).join('').replace(/border-bottom[^"]*"([^<]*<\/div><\/div>)$/,'$1');
-  const rc=document.getElementById('rep-camisa-rows');if(rc)rc.innerHTML=repRowHtml('repcamisa','Ex: 22 E1','');
-  const rr=document.getElementById('rep-rolo-rows');if(rr)rr.innerHTML=repRowHtml('reprolo','1','');
-  const re=document.getElementById('rep-estufa-rows');if(re)re.innerHTML=repRowHtml('repesufa','80','°C');
-  const rfa=document.getElementById('rep-faca-rows');if(rfa)rfa.innerHTML=repRowHtml('repfaca','3.5','Bar');
+  // Camisa: sem desvio, só campo livre
+  const camisaHtml = tintas.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border)"><div class="nc">${t.ESTACAO}</div><div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div><input id="repcamisa-${t.ESTACAO}" type="text" inputmode="decimal" style="width:80px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)" placeholder="Ex: 22 E1"></div>`).join('');
+  const rc=document.getElementById('rep-camisa-rows');if(rc)rc.innerHTML=camisaHtml;
+
+  // Rolo, Estufa, Faca: com detecção de desvio e justificativa
+  const repDesvioRow = (prefix, refFn, placeholder, unit) => tintas.map(t=>{
+    const ref = refFn(t);
+    return `<div id="reprow-${prefix}-${t.ESTACAO}" style="padding:7px 0;border-bottom:0.5px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="nc">${t.ESTACAO}</div>
+        <div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div>
+        <div style="font-size:10px;color:var(--text3);margin-right:4px">Ref: ${ref||'—'}${unit?' '+unit:''}</div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" placeholder="${placeholder}" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)" oninput="chkComplem('${prefix}',${t.ESTACAO},'${ref}')">
+          ${unit?`<span style="font-size:11px;color:var(--text3)">${unit}</span>`:''}
+        </div>
+      </div>
+      <div id="jreprow-${prefix}-${t.ESTACAO}" style="display:none;margin-top:6px;margin-left:30px" class="just-inp">
+        <label><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px"></i> Desvio — justifique</label>
+        <textarea id="jrep-${prefix}-${t.ESTACAO}" rows="2" placeholder="Justifique o desvio..."></textarea>
+      </div>
+    </div>`;
+  }).join('');
+
+  const rr=document.getElementById('rep-rolo-rows');if(rr)rr.innerHTML=repDesvioRow('reprolo',t=>t.PRESSAO_ROLO,'1','');
+  const re=document.getElementById('rep-estufa-rows');if(re)re.innerHTML=repDesvioRow('repesufa',t=>t.TEMP_ESTUFA,'80','°C');
+  const rfa=document.getElementById('rep-faca-rows');if(rfa)rfa.innerHTML=repDesvioRow('repfaca',t=>t.PRESSAO_FACA,'3.5','Bar');
   uPrg();
 }
 
 function getParamRef(pid, p) {
   const map={p0:p.TENSAO_FREIO,p1:p.AVANCO,p2:p.TAXA_REDUCAO,p3:p.PRESSAO_FACA,p4:p.TENSAO_REBOBINADOR,p5:p.PRESSAO_CIL_BORRACHA,p6:p.PRESSAO_COMPACTADOR,p7:p.AVANCO_CR,p8:p.POSICAO_COMPACTADOR,p9:p.VELOCIDADE,p10:p.TEMP_AMBIENTE,p11:p.LARGURA_FILME};
   return map[pid]!==undefined&&map[pid]!==''?String(map[pid]):null;
+}
+
+function chkComplem(prefix, estacao, ref){
+  const i=document.getElementById(prefix+'-'+estacao);
+  const j=document.getElementById('jreprow-'+prefix+'-'+estacao);
+  const ji=document.getElementById('jrep-'+prefix+'-'+estacao);
+  if(!i||!j)return;
+  const v=i.value.trim();
+  if(!v){i.style.border='0.5px solid var(--border2)';i.style.background='var(--card)';i.style.color='var(--text)';j.style.display='none';uBtn();return;}
+  const dv=String(v)!==String(ref);
+  i.style.border=dv?'0.5px solid var(--red-mid)':'0.5px solid var(--border2)';
+  i.style.background=dv?'var(--red-light)':'var(--card)';
+  i.style.color=dv?'var(--red)':'var(--text)';
+  j.style.display=dv?'block':'none';
+  uBtn();
 }
 
 function chkV(n,ref){const i=document.getElementById('visc-'+n),j=document.getElementById('vtv-'+n),v=parseFloat(i.value.replace(',','.'));if(isNaN(v)||i.value.trim()===''){i.className='vi';j.style.display='none';uBtn();return;}const dv=Math.abs(v-ref)>TOL_VISC;i.className='vi'+(dv?' vdv':'');j.style.display=dv?'block':'none';uBtn();}
@@ -847,7 +884,19 @@ function uBtn(){
   const tOk=tintas.every(t=>document.getElementById('visc-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('sec-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('repcamisa-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('reprolo-'+t.ESTACAO)?.value.trim()!==''&&document.getElementById('repesufa-'+t.ESTACAO)?.value.trim()!=='');
   const pOk=paramsDef.filter(p=>p.tipo!=='info').every(p=>document.getElementById('pinp-'+p.id)?.value.trim()!=='');
   const jOk=getDvF().every(d=>d.just.trim()!=='');
-  const ok=operOk&&opOk&&tOk&&pOk&&jOk;
+  const r2=receitas.find(x=>String(x.ID)===String(recIdx));
+  const tintas2=Array.isArray(r2?.tintas)?r2.tintas:[];
+  const compJok=['reprolo','repesufa','repfaca'].every(prefix=>
+    tintas2.every(t=>{
+      const i=document.getElementById(prefix+'-'+t.ESTACAO);
+      const j=document.getElementById('jrep-'+prefix+'-'+t.ESTACAO);
+      if(i?.style.borderColor==='var(--red-mid)'||i?.style.background==='var(--red-light)'){
+        return j?.value.trim()!=='';
+      }
+      return true;
+    })
+  );
+  const ok=operOk&&opOk&&tOk&&pOk&&jOk&&compJok;
   document.getElementById('btn-revisar').disabled=!ok;
 }
 
@@ -866,6 +915,18 @@ function getDvF(){
   paramsDef.filter(p=>p.tipo!=='info').forEach(p=>{
     const i=document.getElementById('pinp-'+p.id),j=document.getElementById('jparam-'+p.id);
     if(i?.classList.contains('dv')||i?.classList.contains('dv'))dvs.push({key:p.id,lbl:p.lbl+(p.un?` (${p.un})`:''),val:i.value,ref:getParamRef(p.id,pRef)||p.ref,just:j?.value||'',tipo:'MAQUINA',tipoAlt:''});
+  });
+  const r3=receitas.find(x=>String(x.ID)===String(recIdx));
+  const tintas3=Array.isArray(r3?.tintas)?r3.tintas:(r3?.tintas?[r3.tintas]:[]);
+  [{prefix:'reprolo',lbl:'Pressão do Rolo',refFn:t=>t.PRESSAO_ROLO,un:''},{prefix:'repesufa',lbl:'Estufa',refFn:t=>t.TEMP_ESTUFA,un:'°C'},{prefix:'repfaca',lbl:'Pressão da Faca',refFn:t=>t.PRESSAO_FACA,un:'Bar'}].forEach(({prefix,lbl,refFn,un})=>{
+    tintas3.forEach(t=>{
+      const i=document.getElementById(prefix+'-'+t.ESTACAO);
+      const j=document.getElementById('jrep-'+prefix+'-'+t.ESTACAO);
+      const ref=String(refFn(t)||'');
+      if(i&&i.value.trim()&&i.value.trim()!==ref){
+        dvs.push({key:`${prefix}-${t.ESTACAO}`,lbl:`Est. ${t.ESTACAO} — ${lbl}`,val:`${i.value}${un?' '+un:''}`,ref:`${ref}${un?' '+un:''}`,just:j?.value||'',tipo:'COMPLEMENTO',tipoAlt:''});
+      }
+    });
   });
   return dvs;
 }
