@@ -702,16 +702,16 @@ let sbwHTML='';
 
 const paramsDef=[
   {id:'p0',lbl:'Tensão Freio Desbob.',un:'N',ref:'70',tipo:'normal'},
-  {id:'p1',lbl:'Avanço',un:'N',ref:'80',tipo:'normal'},
-  {id:'p2',lbl:'Taxa de Redução',un:'%',ref:'15',tipo:'normal'},
-
-  {id:'p4',lbl:'Tensão Rebobinador',un:'N',ref:'30',tipo:'normal'},
-  {id:'p5',lbl:'Pressão Cil. Borracha',un:'',ref:'200',tipo:'normal'},
-  {id:'p6',lbl:'Pressão Compactador',un:'Bar',ref:'2',tipo:'normal'},
-  {id:'p7',lbl:'Avanço CR',un:'N',ref:'150',tipo:'normal'},
-  {id:'p8',lbl:'Posição Compactador',un:'',ref:'FENDA',tipo:'sel',opts:['FENDA','CONTATO']},
-  {id:'p9',lbl:'Velocidade',un:'m/min',ref:'160',tipo:'normal'},
-  {id:'p10',lbl:'Temp. Ambiente',un:'°C',ref:'27',tipo:'info'},
+  {id:'p1',lbl:'Pressão Compactador',un:'Bar',ref:'2',tipo:'normal'},
+  {id:'p2',lbl:'Avanço CR',un:'N',ref:'150',tipo:'normal'},
+  {id:'p3',lbl:'Velocidade',un:'m/min',ref:'160',tipo:'normal'},
+  {id:'p4',lbl:'Taxa de Redução',un:'%',ref:'15',tipo:'normal'},
+  {id:'p5',lbl:'Tensão Rebobinador',un:'N',ref:'30',tipo:'normal'},
+  {id:'p6',lbl:'Avanço',un:'N',ref:'80',tipo:'normal'},
+  {id:'p7',lbl:'Posição Compactador',un:'',ref:'FENDA',tipo:'sel',opts:['FENDA','CONTATO']},
+  {id:'p8',lbl:'Temp. Ambiente',un:'°C',ref:'27',tipo:'info'},
+  {id:'p9',lbl:'Largura do Filme',un:'mm',ref:'850',tipo:'normal'},
+  {id:'p10',lbl:'Pressão Cil. Borracha',un:'',ref:'200',tipo:'normal'},
   {id:'p11',lbl:'Largura do Filme',un:'mm',ref:'850',tipo:'normal'},
 ];
 
@@ -941,7 +941,7 @@ function rRep() {
 }
 
 function getParamRef(pid, p) {
-  const map={p0:p.TENSAO_FREIO,p1:p.AVANCO,p2:p.TAXA_REDUCAO,p3:p.TENSAO_REBOBINADOR,p4:p.PRESSAO_CIL_BORRACHA,p5:p.PRESSAO_COMPACTADOR,p6:p.AVANCO_CR,p7:p.POSICAO_COMPACTADOR,p8:p.VELOCIDADE,p9:p.TEMP_AMBIENTE,p10:p.LARGURA_FILME};
+  const map={p0:p.TENSAO_FREIO,p1:p.PRESSAO_COMPACTADOR,p2:p.AVANCO_CR,p3:p.VELOCIDADE,p4:p.TAXA_REDUCAO,p5:p.TENSAO_REBOBINADOR,p6:p.AVANCO,p7:p.POSICAO_COMPACTADOR,p8:p.TEMP_AMBIENTE,p9:p.LARGURA_FILME,p10:p.PRESSAO_CIL_BORRACHA};
   return map[pid]!==undefined&&map[pid]!==''?String(map[pid]):null;
 }
 
