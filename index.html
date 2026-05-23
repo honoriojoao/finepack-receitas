@@ -712,7 +712,6 @@ const paramsDef=[
   {id:'p8',lbl:'Temp. Ambiente',un:'°C',ref:'27',tipo:'info'},
   {id:'p9',lbl:'Largura do Filme',un:'mm',ref:'850',tipo:'normal'},
   {id:'p10',lbl:'Pressão Cil. Borracha',un:'',ref:'200',tipo:'normal'},
-  {id:'p11',lbl:'Largura do Filme',un:'mm',ref:'850',tipo:'normal'},
 ];
 
 // ── API ──────────────────────────────────────────────────
@@ -905,7 +904,7 @@ function rRep() {
     const isSel=p.tipo==='sel', isInf=p.tipo==='info';
     const inp = isSel
       ? `<select class="param-sel" id="pinp-${p.id}" onchange="chkP('${p.id}','${refVal}')"><option value="">—</option>${p.opts.map(o=>`<option>${o}</option>`).join('')}</select>`
-      : `<input class="param-inp${isInf?' inf':''}" id="pinp-${p.id}" type="text" inputmode="decimal" oninput="chkP('${p.id}','${refVal}')">`;
+      : `<input class="param-inp${isInf?' inf':''}" id="pinp-${p.id}" type="text" inputmode="decimal" oninput="chkP('${p.id}','${refVal}')" placeholder="">`;
     return `<div class="param-row"><div class="param-top"><div class="param-lbl">${p.lbl}${p.un?`<span class="un">(${p.un})</span>`:''}</div>${inp}</div><div id="jprow-${p.id}" style="display:none" class="just-inp"><label><i class="ti ti-alert-triangle" style="font-size:11px;vertical-align:-1px"></i> Fora do especificado — justifique</label><textarea id="jparam-${p.id}" rows="2" placeholder="Justifique..."></textarea></div></div>`;
   }).join('');
 
@@ -923,7 +922,7 @@ function rRep() {
         <div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div>
         <div style="font-size:10px;color:var(--text3);margin-right:4px">Ref: ${ref||'—'}${unit?' '+unit:''}</div>
         <div style="display:flex;align-items:center;gap:4px">
-          <input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" placeholder="${placeholder}" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)" oninput="chkComplem('${prefix}',${t.ESTACAO},'${ref}')">
+          <input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" placeholder="" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)" oninput="chkComplem('${prefix}',${t.ESTACAO},'${ref}')">
           ${unit?`<span style="font-size:11px;color:var(--text3)">${unit}</span>`:''}
         </div>
       </div>
@@ -1402,22 +1401,45 @@ function atualizarComplementos(){
 
 function sH(n,on){document.getElementById('hon-'+n).className='to '+(on?'ton':'');document.getElementById('hof-'+n).className='to '+(on?'':'tof');const r=document.getElementById('htr-'+n);if(r){r.style.display=on?'flex':'none';if(on)document.getElementById('hti-'+n)?.focus();}}
 
+function salvarCompVals(){
+  // Salvar todos os valores dos complementos antes de sair do passo 2
+  window._compVals = window._compVals || {};
+  ['camisa','rolo','faca'].forEach(prefix=>{
+    [1,2,3,4,5,6,7,8,9].forEach(n=>{
+      const el=document.getElementById(prefix+'-'+n);
+      if(el) window._compVals[prefix+'-'+n] = el.value;
+    });
+  });
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
+    const el=document.getElementById('estufa-'+n);
+    if(el) window._compVals['estufa-'+n] = el.value;
+  });
+  const preOn=document.getElementById('hon-preHot')?.className.includes('ton')||false;
+  const posOn=document.getElementById('hon-posHot')?.className.includes('ton')||false;
+  window._preHot={on:preOn,temp:document.getElementById('hti-preHot')?.value||''};
+  window._posHot={on:posOn,temp:document.getElementById('hti-posHot')?.value||''};
+}
+
+function restaurarCompVals(){
+  if(!window._compVals) return;
+  Object.entries(window._compVals).forEach(([id,val])=>{
+    const el=document.getElementById(id);if(el&&val!==undefined)el.value=val;
+  });
+  if(window._preHot){sHF('preHot',window._preHot.on);const el=document.getElementById('hti-preHot');if(el&&window._preHot.temp)el.value=window._preHot.temp;}
+  if(window._posHot){sHF('posHot',window._posHot.on);const el=document.getElementById('hti-posHot');if(el&&window._posHot.temp)el.value=window._posHot.temp;}
+}
+
 function nStep(n){
-  nsn=n;[1,2,3,4].forEach(i=>{const e=document.getElementById('ns'+i);if(e)e.style.display=i===n?'block':'none';});
+  // Salvar valores ANTES de sair do passo 2
+  if(nsn===2) salvarCompVals();
+  nsn=n;
+  [1,2,3,4].forEach(i=>{const e=document.getElementById('ns'+i);if(e)e.style.display=i===n?'block':'none';});
   uSB(n);
   if(n===2&&document.querySelectorAll('.tbloco').length===0){for(let i=1;i<=9;i++)addT(i);}
   if(n===2){
     setTimeout(()=>{
       atualizarComplementos();
-      // Restaurar valores salvos dos complementos
-      if(window._compVals){
-        Object.entries(window._compVals).forEach(([id,val])=>{
-          const el=document.getElementById(id);if(el)el.value=val;
-        });
-      }
-      // Restaurar PRÉ/PÓS HOT
-      if(window._preHot){sHF('preHot',window._preHot.on);if(window._preHot.temp&&document.getElementById('hti-preHot'))document.getElementById('hti-preHot').value=window._preHot.temp;}
-      if(window._posHot){sHF('posHot',window._posHot.on);if(window._posHot.temp&&document.getElementById('hti-posHot'))document.getElementById('hti-posHot').value=window._posHot.temp;}
+      restaurarCompVals();
     },100);
   }
   if(n===4)bRv();
@@ -1549,7 +1571,7 @@ function tIr(sc,tid,t,s){
   document.getElementById('tps').textContent=s;
 }
 
-function rst(){pinBufN='';pinBufR='';nsn=1;}
+function rst(){pinBufN='';pinBufR='';nsn=1;window._compVals=null;window._preHot=null;window._posHot=null;}
 
 document.addEventListener('input',e=>{
   if(e.target.id==='oper-inp'||e.target.id==='op-inp'||['jvisc-','jsec-','jparam-'].some(p=>e.target.id.startsWith(p)))uBtn();
