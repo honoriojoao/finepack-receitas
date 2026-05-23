@@ -778,9 +778,16 @@ function apiPost(body) {
 async function carregarReceitas() {
   try {
     receitas = await apiGet('getReceitas');
+    // Normalizar dados que podem vir em formatos inconsistentes
+    receitas = receitas.map(r => ({
+      ...r,
+      tintas: Array.isArray(r.tintas) ? r.tintas : (r.tintas ? [r.tintas] : []),
+      parametros: Array.isArray(r.parametros) ? (r.parametros[0]||{}) : (r.parametros||{}),
+      versoes: Array.isArray(r.versoes) ? r.versoes : []
+    }));
     rL(receitas);
-    atualizarHistorico();
-    atualizarPainel();
+    try { atualizarHistorico(); } catch(e2) { console.warn('atualizarHistorico:', e2.message); }
+    try { atualizarPainel(); } catch(e3) { console.warn('atualizarPainel:', e3.message); }
   } catch(e) {
     document.getElementById('lw').innerHTML = `<div style="padding:20px 0;text-align:center;font-size:13px;color:var(--red)">Erro ao carregar receitas: ${e.message}</div>`;
   }
@@ -842,13 +849,6 @@ function abrirRec(id) {
   const estufaHtml=preHotRow+tintas.map(t=>`<div class="er"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div class="tbdg ${t.TEMP_ESTUFA?'tbon':'tbof'}">${t.TEMP_ESTUFA?`<i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.TEMP_ESTUFA}°C`:'Desligada'}</div></div>`).join('')+posHotRow;const estufaHtml = tintas.map(t=>`<div class="er"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div class="tbdg ${t.TEMP_ESTUFA?'tbon':'tbof'}">${t.TEMP_ESTUFA?`<i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.TEMP_ESTUFA}°C`:'Desligada'}</div></div>`).join('');
   document.getElementById('rec-estufas').innerHTML=`<div class="sl">Estufas por estação</div>${estufaHtml}`;
 
-  // Seção Pressão do Rolo
-  const roloHtml = tintas.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border)"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.PRESSAO_ROLO||'—'}</div></div>`).join('').replace(/border-bottom[^"]*"([^<]*<\/div>)$/,'$1');
-  document.getElementById('rec-rolo').innerHTML=`<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)"><div style="width:32px;height:32px;border-radius:var(--rad);background:#EAF3DE;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-adjustments-horizontal" style="font-size:17px;color:#3B6D11"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Pressão do Rolo</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Por estação</div></div></div><div style="padding:0 14px">${roloHtml}</div>`;
-
-  // Seção Pressão da Faca
-  const facaHtml = tintas.map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--border)"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.PRESSAO_FACA||'—'} <span style="font-size:11px;color:var(--text2);font-weight:400">Bar</span></div></div>`).join('').replace(/border-bottom[^"]*"([^<]*<\/div>)$/,'$1');
-  document.getElementById('rec-faca').innerHTML=`<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)"><div style="width:32px;height:32px;border-radius:var(--rad);background:#F3EEFB;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-adjustments" style="font-size:17px;color:#6B3FA0"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Pressão da Faca</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Por estação · Bar</div></div></div><div style="padding:0 14px">${facaHtml}</div>`;
 
   document.getElementById('tpt').textContent=`${r.CLIENTE} · ${fmtCodPAExib(r.COD_PA)}`;
   document.getElementById('tps').textContent=`${r.MAQUINA} · Rotogravura`;
@@ -857,11 +857,18 @@ function abrirRec(id) {
   if(obsEl){
     if(r.OBSERVACOES){
       obsEl.style.display='';
-      obsEl.innerHTML=`<div class="sl">Observações técnicas</div><div class="oi"><div class="od"></div><div class="ot">${r.OBSERVACOES}</div></div>`;
+      obsEl.innerHTML=`<div class="sl">Observações técnicas</div>${String(r.OBSERVACOES).split('\n').filter(l=>l.trim()).map(l=>`<div class="oi"><div class="od"></div><div class="ot">${l.trim()}</div></div>`).join('')}`;
     } else {
       obsEl.style.display='none';
     }
   }
+  // Seções rolo e faca com proteção
+  try {
+    const roloHtml=tintas.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;${i<tintas.length-1?'border-bottom:0.5px solid var(--border)':''}"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.PRESSAO_ROLO||'—'}</div></div>`).join('');
+    document.getElementById('rec-rolo').innerHTML=`<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)"><div style="width:32px;height:32px;border-radius:var(--rad);background:#EAF3DE;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-adjustments-horizontal" style="font-size:17px;color:#3B6D11"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Pressão do Rolo</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Por estação</div></div></div><div style="padding:0 14px">${roloHtml}</div>`;
+    const facaHtml=tintas.map((t,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;${i<tintas.length-1?'border-bottom:0.5px solid var(--border)':''}"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.PRESSAO_FACA||'—'} <span style="font-size:11px;color:var(--text2);font-weight:400">Bar</span></div></div>`).join('');
+    document.getElementById('rec-faca').innerHTML=`<div style="padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--border)"><div style="width:32px;height:32px;border-radius:var(--rad);background:#F3EEFB;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-adjustments" style="font-size:17px;color:#6B3FA0"></i></div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Pressão da Faca</div><div style="font-size:11px;color:var(--text3);margin-top:1px">Por estação · Bar</div></div></div><div style="padding:0 14px">${facaHtml}</div>`;
+  } catch(e){console.warn('rolo/faca:',e.message);}
   document.getElementById('sbw').innerHTML='';
   document.getElementById('tpp').style.display='';
   ir('s-rec');
