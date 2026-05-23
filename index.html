@@ -398,17 +398,6 @@ textarea{resize:none;line-height:1.5;width:100%}
           <div style="padding:12px 14px" id="estufa-rows"></div>
         </div>
         <!-- PÓS HOT FIXO -->
-        <div class="card" style="overflow:hidden;padding:0">
-          <div style="padding:10px 14px;display:flex;align-items:center;gap:10px;background:var(--amber-light);border-bottom:0.5px solid var(--border)">
-            <div style="width:32px;height:32px;border-radius:var(--rad);background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-flame" style="font-size:17px;color:var(--amber)"></i></div>
-            <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--amber)">PÓS HOT</div><div style="font-size:11px;color:var(--amber);opacity:.8;margin-top:1px">Aquecimento após a impressão</div></div>
-            <div class="htog"><button class="to tof" id="hof-posHot" onclick="sHF('posHot',false)">Não</button><button class="to" id="hon-posHot" onclick="sHF('posHot',true)">Sim</button></div>
-          </div>
-          <div class="htr" id="htr-posHot" style="display:none;padding:10px 14px">
-            <span style="font-size:12px;color:var(--text2);flex:1">Temperatura</span>
-            <input class="hti" id="hti-posHot" type="text" inputmode="numeric"><span style="font-size:12px;color:var(--text2)">°C</span>
-          </div>
-        </div>
         <div class="nr"><button class="bnp" onclick="nStep(1)"><i class="ti ti-arrow-left"></i> Voltar</button><button class="bnn" onclick="nStep(3)">Parâmetros <i class="ti ti-arrow-right"></i></button></div>
       </div>
       <div id="ns3" style="display:none">
