@@ -845,7 +845,13 @@ function abrirRec(id) {
   const posHotRow=posHotTinta
     ?`<div class="er"><div class="esp"><i class="ti ti-flame" style="font-size:11px"></i>PÓS HOT</div><div style="flex:1"></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${posHotTinta.POS_HOT_TEMP}°C</div></div>`
     :`<div class="er"><div class="esp" style="background:var(--bg);color:var(--text3)"><i class="ti ti-flame-off" style="font-size:11px"></i>PÓS HOT</div><div style="flex:1"></div><div class="tbdg tbof">Desligado</div></div>`;
-  const estufaHtml=preHotRow+tintas.map(t=>`<div class="er"><div class="en">${t.ESTACAO}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.NOME_COR}</div></div><div class="tbdg ${t.TEMP_ESTUFA?'tbon':'tbof'}">${t.TEMP_ESTUFA?`<i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.TEMP_ESTUFA}°C`:'Desligada'}</div></div>`).join('')+posHotRow;document.getElementById('rec-estufas').innerHTML=`<div class="sl">Estufas por estação</div>${estufaHtml}`;
+  // Montar mapa de estufas — incluindo estações sem tinta (codTinta vazio)
+  const estufaMap={};
+  tintas.forEach(t=>{if(t.TEMP_ESTUFA)estufaMap[String(t.ESTACAO)]=t.TEMP_ESTUFA;});
+  const tintaMap={};
+  tintas.filter(t=>t.NOME_COR&&t.COD_TINTA).forEach(t=>{tintaMap[String(t.ESTACAO)]=t.NOME_COR;});
+  const estufaRows=[1,2,3,4,5,6,7,8,9].filter(n=>estufaMap[String(n)]).map(n=>`<div class="er"><div class="en">${n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${tintaMap[String(n)]||'— sem tinta —'}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${estufaMap[String(n)]}°C</div></div>`).join('');
+  const estufaHtml=preHotRow+estufaRows+posHotRow;document.getElementById('rec-estufas').innerHTML=`<div class="sl">Estufas por estação</div>${estufaHtml}`;
 
 
   document.getElementById('tpt').textContent=`${r.CLIENTE} · ${fmtCodPAExib(r.COD_PA)}`;
@@ -920,7 +926,6 @@ function rRep() {
       <div style="display:flex;align-items:center;gap:8px">
         <div class="nc">${t.ESTACAO}</div>
         <div style="flex:1;font-size:12px;color:var(--text2)">${t.NOME_COR}</div>
-        <div style="font-size:10px;color:var(--text3);margin-right:4px">Ref: ${ref||'—'}${unit?' '+unit:''}</div>
         <div style="display:flex;align-items:center;gap:4px">
           <input id="${prefix}-${t.ESTACAO}" type="text" inputmode="decimal" placeholder="" style="width:72px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)" oninput="chkComplem('${prefix}',${t.ESTACAO},'${ref}')">
           ${unit?`<span style="font-size:11px;color:var(--text3)">${unit}</span>`:''}
@@ -1130,6 +1135,16 @@ async function salvarNovaReceita(aprovador) {
     const secM=parseInt(secRaw[0])||0,secS=parseInt(secRaw[1])||0;
     return{estacao:n,codTinta:ins[0]?.value||'',nomeCor:ins[1]?.value||'',idCamisa:document.getElementById('camisa-'+n)?.value||'',viscosidade:parseFloat(ins[2]?.value)||0,pressaoRolo:document.getElementById('rolo-'+n)?.value||'',pressaoFaca:document.getElementById('faca-'+n)?.value||'',secagemMin:secM,secagemSeg:secS,tempEstufa:document.getElementById('estufa-'+n)?.value||'',preHot:preHotOn,preHotTemp:document.getElementById('hti-preHot')?.value||'',posHot:posHotOn,posHotTemp:document.getElementById('hti-posHot')?.value||''};
   });
+  // Adicionar estufas das estações sem tinta (estações removidas)
+  const estacoesComTinta=tintas.map(t=>t.estacao);
+  for(let n=1;n<=9;n++){
+    if(!estacoesComTinta.includes(n)){
+      const tempEstufa=document.getElementById('estufa-'+n)?.value||'';
+      if(tempEstufa){
+        tintas.push({estacao:n,codTinta:'',nomeCor:'',idCamisa:'',viscosidade:0,pressaoRolo:'',pressaoFaca:'',secagemMin:0,secagemSeg:0,tempEstufa,preHot:false,preHotTemp:'',posHot:false,posHotTemp:''});
+      }
+    }
+  }
   const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
   const parametros={tensaoFreio:pbInputs[0]?.value||'',pressaoCompactador:pbInputs[1]?.value||'',avancoCR:pbInputs[2]?.value||'',velocidade:pbInputs[3]?.value||'',taxaReducao:pbInputs[4]?.value||'',tensaoRebobinador:pbInputs[5]?.value||'',avanco:pbInputs[6]?.value||'',posicaoCompactador:pbInputs[7]?.value||'',tempAmbiente:pbInputs[8]?.value||'',larguraFilme:pbInputs[9]?.value||'',pressaoCilBorracha:pbInputs[10]?.value||''};
   try {
@@ -1477,7 +1492,10 @@ function bRv(){
     {l:'Pressão Cil. Borracha',v:pbInputs[10]?.value||'—',u:''},
   ];
   const obs=document.getElementById('n-obs')?.value||'';
-  const estufaHtml=ts.filter(t=>t.estufa).map(t=>`<div class="er"><div class="en">${t.n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${t.estufa}°C</div></div>`).join('');
+  // Estufas no resumo: todas as 9 posições, incluindo sem tinta
+  const estufaMapB={};ts.forEach(t=>{if(t.estufa)estufaMapB[t.n]=t.estufa;});
+  for(let n=1;n<=9;n++){const el=document.getElementById('estufa-'+n);if(el&&el.value&&!estufaMapB[n])estufaMapB[n]=el.value;}
+  const estufaHtml=Object.entries(estufaMapB).sort((a,b)=>a[0]-b[0]).map(([n,temp])=>{const tinta=ts.find(t=>t.n===parseInt(n));return`<div class="er"><div class="en">${n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${tinta?.nome||'— sem tinta —'}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${temp}°C</div></div>`;}).join('');
   document.getElementById('rvw').innerHTML=`
     <div class="sl">Identificação</div>
     <div class="hg" style="margin-bottom:8px">
