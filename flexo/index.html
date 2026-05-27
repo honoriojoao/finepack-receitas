@@ -476,42 +476,116 @@ textarea{resize:none;line-height:1.5;width:100%}
 
     <!-- HISTÓRICO -->
     <div id="s-hist" class="sc">
-      <div class="sl">Histórico por receita</div>
-      <div class="fcs" id="hist-filtros"></div>
-      <div id="hist-conteudo"></div>
+      <div class="met">
+        <div class="mt"><div class="ml">Repetições</div><div class="mv" id="h-tot">—</div></div>
+        <div class="mt"><div class="ml">Com desvio</div><div class="mv" style="color:var(--amber)" id="h-dv">—</div></div>
+        <div class="mt"><div class="ml">Versões</div><div class="mv" id="h-ver">—</div></div>
+        <div class="mt"><div class="ml">Taxa de adesão</div><div class="mv" id="h-taxa">—</div></div>
+      </div>
+      <div class="sw" style="margin-bottom:8px">
+        <i class="ti ti-search"></i>
+        <input type="text" placeholder="Buscar por Cód. PA ou cliente..." id="hs" oninput="filtrarH()">
+      </div>
+      <div class="fcs">
+        <div class="fc fa" onclick="setFH(this,'todos')">Todos</div>
+        <div class="fc" onclick="setFH(this,'ok')">Sem desvio</div>
+        <div class="fc" onclick="setFH(this,'desvio')">Com desvio</div>
+      </div>
+      <div id="hres"></div>
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- PEND LOCK -->
+    <div id="s-pend-lock" class="sc">
+      <div class="lock-screen">
+        <div class="lock-ic" style="background:var(--blue-light)"><i class="ti ti-lock" style="font-size:28px;color:var(--blue)"></i></div>
+        <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Acesso restrito</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6">A tela de pendências é exclusiva para supervisores. Digite o PIN para acessar.</div>
+        <div class="pin-ds"><div class="pin-d" id="plkd0"></div><div class="pin-d" id="plkd1"></div><div class="pin-d" id="plkd2"></div><div class="pin-d" id="plkd3"></div></div>
+        <div class="pin-g" style="max-width:280px">
+          <button class="pib" onclick="ppLock('pend','1')">1</button><button class="pib" onclick="ppLock('pend','2')">2</button><button class="pib" onclick="ppLock('pend','3')">3</button>
+          <button class="pib" onclick="ppLock('pend','4')">4</button><button class="pib" onclick="ppLock('pend','5')">5</button><button class="pib" onclick="ppLock('pend','6')">6</button>
+          <button class="pib" onclick="ppLock('pend','7')">7</button><button class="pib" onclick="ppLock('pend','8')">8</button><button class="pib" onclick="ppLock('pend','9')">9</button>
+          <button class="pib" style="font-size:15px" onclick="ppLock('pend','back')">⌫</button>
+          <button class="pib" onclick="ppLock('pend','0')">0</button>
+          <button class="pib" style="background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:700" onclick="ppLock('pend','ok')">OK</button>
+        </div>
+        <div class="pie" id="plk-pend-err"></div>
+      </div>
     </div>
 
     <!-- PENDÊNCIAS -->
     <div id="s-pend" class="sc">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;flex:1">
+          <div class="mt"><div class="ml">Pendentes</div><div class="mv" style="color:var(--amber)" id="pend-cnt">0</div></div>
+          <div class="mt"><div class="ml">Aprovadas</div><div class="mv" style="color:var(--green)" id="pend-aprov">0</div></div>
+          <div class="mt"><div class="ml">Rejeitadas</div><div class="mv" id="pend-rej-cnt">0</div></div>
+        </div>
+        <button onclick="sairLock('pend')" style="background:transparent;border:none;cursor:pointer;color:var(--text3);padding:4px;margin-left:10px;flex-shrink:0"><i class="ti ti-lock" style="font-size:19px"></i></button>
+      </div>
       <div class="sl">Aguardando aprovação</div>
-      <div id="pend-lista"></div>
+      <div id="pend-list"></div>
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- PAINEL LOCK -->
+    <div id="s-painel-lock" class="sc">
+      <div class="lock-screen">
+        <div class="lock-ic" style="background:var(--blue-light)"><i class="ti ti-lock" style="font-size:28px;color:var(--blue)"></i></div>
+        <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Acesso restrito</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6">O painel de supervisão é exclusivo para supervisores. Digite o PIN para acessar.</div>
+        <div class="pin-ds"><div class="pin-d" id="plkd-p0"></div><div class="pin-d" id="plkd-p1"></div><div class="pin-d" id="plkd-p2"></div><div class="pin-d" id="plkd-p3"></div></div>
+        <div class="pin-g" style="max-width:280px">
+          <button class="pib" onclick="ppLock('painel','1')">1</button><button class="pib" onclick="ppLock('painel','2')">2</button><button class="pib" onclick="ppLock('painel','3')">3</button>
+          <button class="pib" onclick="ppLock('painel','4')">4</button><button class="pib" onclick="ppLock('painel','5')">5</button><button class="pib" onclick="ppLock('painel','6')">6</button>
+          <button class="pib" onclick="ppLock('painel','7')">7</button><button class="pib" onclick="ppLock('painel','8')">8</button><button class="pib" onclick="ppLock('painel','9')">9</button>
+          <button class="pib" style="font-size:15px" onclick="ppLock('painel','back')">⌫</button>
+          <button class="pib" onclick="ppLock('painel','0')">0</button>
+          <button class="pib" style="background:var(--blue-light);color:var(--blue);font-size:13px;font-weight:700" onclick="ppLock('painel','ok')">OK</button>
+        </div>
+        <div class="pie" id="plk-painel-err"></div>
+      </div>
     </div>
 
     <!-- PAINEL -->
     <div id="s-painel" class="sc">
-      <div class="lock-screen" id="painel-lock">
-        <div class="lock-ic" style="background:var(--blue-light)"><i class="ti ti-lock" style="font-size:26px;color:var(--blue)"></i></div>
-        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">Acesso restrito</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.5">Digite o PIN do supervisor</div>
-        <div class="pin-ds" id="pnd-p"><div class="pin-d" id="pd-p-0"></div><div class="pin-d" id="pd-p-1"></div><div class="pin-d" id="pd-p-2"></div><div class="pin-d" id="pd-p-3"></div></div>
-        <div style="margin-bottom:16px"></div>
-        <div class="pin-g" style="max-width:300px">
-          <button class="pib" onclick="pinP('1')">1</button><button class="pib" onclick="pinP('2')">2</button><button class="pib" onclick="pinP('3')">3</button>
-          <button class="pib" onclick="pinP('4')">4</button><button class="pib" onclick="pinP('5')">5</button><button class="pib" onclick="pinP('6')">6</button>
-          <button class="pib" onclick="pinP('7')">7</button><button class="pib" onclick="pinP('8')">8</button><button class="pib" onclick="pinP('9')">9</button>
-          <button class="pib" onclick="pinP('del')" style="font-size:16px"><i class="ti ti-backspace"></i></button>
-          <button class="pib" onclick="pinP('0')">0</button>
-          <button class="pib" onclick="pinP('ok')" style="background:var(--blue);color:#fff;border-color:var(--blue)"><i class="ti ti-check"></i></button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div><div style="font-size:14px;font-weight:700;color:var(--text)">Painel de supervisão</div><div style="font-size:11px;color:var(--text2);margin-top:1px" id="per-sub">Rotogravura</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <select style="font-size:12px;color:var(--blue);background:var(--blue-light);border:none;border-radius:var(--rad);padding:5px 9px;cursor:pointer;outline:none;font-weight:600" onchange="chPer(this)"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option></select>
+          <button onclick="sairLock('painel')" style="background:transparent;border:none;cursor:pointer;color:var(--text3);padding:2px"><i class="ti ti-lock" style="font-size:17px"></i></button>
         </div>
-        <div class="pie" id="ppe"></div>
       </div>
-      <div id="painel-conteudo" style="display:none">
-        <div class="met" id="painel-met"></div>
-        <div class="sl">Receitas recentes</div>
+      <div class="met" id="painel-met">
+        <div class="mt"><div class="ml">Receitas ativas</div><div class="mv" id="pm-rec">—</div></div>
+        <div class="mt"><div class="ml">Repetições</div><div class="mv" id="pm-rep">—</div></div>
+        <div class="mt"><div class="ml">Desvios</div><div class="mv" id="pm-dv">—</div></div>
+        <div class="mt"><div class="ml">Pendências abertas</div><div class="mv" id="pm-pend">—</div></div>
+      </div>
+      <div class="card">
+        <div class="sl">Resumo por receita</div>
         <div id="painel-lista"></div>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+
+    <!-- SUCESSO -->
+    <div id="s-suc" class="sc">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:40px 16px;text-align:center">
+        <div id="suc-ic" style="width:60px;height:60px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><i class="ti ti-check" style="font-size:30px;color:var(--green)"></i></div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px" id="suc-t">Salvo!</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:16px" id="suc-s">Registro completo.</div>
+        <div class="trbx" id="suc-tr"></div>
+        <button class="bp" style="width:auto;padding:12px 28px" id="suc-btn"><i class="ti ti-file-text"></i> Voltar às receitas</button>
       </div>
     </div>
 
+  </div>
+
+  <div class="overlay-loading" id="overlay-loading">
+    <div class="overlay-spinner"></div>
+    <div class="overlay-msg" id="overlay-msg">Salvando...</div>
   </div>
   <div class="tab-bar">
     <button class="tab-item ta" id="tab-r" onclick="setTab('tab-r');irLista()"><i class="ti ti-file-text"></i><span class="tbl">Receitas</span></button>
@@ -1102,90 +1176,751 @@ async function salvarRepeticao(aprovador){
 
 // ── HISTÓRICO ─────────────────────────────────────────────
 function atualizarHistorico(){
-  const filtros=document.getElementById('hist-filtros');
-  const conteudo=document.getElementById('hist-conteudo');
-  if(!filtros||!conteudo)return;
-  if(!receitas.length){conteudo.innerHTML='<div style="padding:20px;text-align:center;font-size:13px;color:var(--text3)">Nenhuma receita</div>';return;}
-  filtros.innerHTML=receitas.map((r,i)=>`<button class="fc${i===0?' fca':''}" onclick="filtrarHist(${r.ID},this)">${r.CLIENTE} — ${fmtCodPAExib(r.COD_PA)}</button>`).join('');
-  if(receitas[0])filtrarHist(receitas[0].ID,filtros.firstChild);
+  const totRep=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).length,0),0);
+  const totDv=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0),0);
+  const totVer=receitas.reduce((s,r)=>s+(r.versoes||[]).length,0);
+  document.getElementById('h-tot').textContent=totRep;
+  document.getElementById('h-dv').textContent=totDv;
+  document.getElementById('h-ver').textContent=totVer;
+  document.getElementById('h-taxa').textContent=totRep>0?Math.round(((totRep-totDv)/totRep)*100)+'%':'—';
+  renderH('',filtroH);
 }
 
-function filtrarHist(id,btn){
-  document.querySelectorAll('#hist-filtros .fc').forEach(b=>b.classList.remove('fca'));
-  if(btn)btn.classList.add('fca');
-  const r=receitas.find(x=>String(x.ID)===String(id));
-  const conteudo=document.getElementById('hist-conteudo');
-  if(!r||!conteudo)return;
-  const versoes=[...(r.versoes||[])].sort((a,b)=>b.NUMERO_VERSAO-a.NUMERO_VERSAO);
-  conteudo.innerHTML=versoes.map(v=>`<div class="hist-card"><div class="hist-hdr"><div class="hist-v">Versão ${v.NUMERO_VERSAO}</div><span class="hist-vb ${v.ATIVA===true||v.ATIVA==='TRUE'?'hist-vb-a':'hist-vb-o'}">${v.ATIVA===true||v.ATIVA==='TRUE'?'Vigente':'Obsoleta'}</span></div><div style="padding:10px 14px"><div class="trr"><div class="trl">Aprovador 1</div><div class="trv">${v.APROVADOR_1||'—'}</div></div><div class="trr"><div class="trl">Aprovador 2</div><div class="trv">${v.APROVADOR_2||'—'}</div></div><div class="trr"><div class="trl">Data</div><div class="trv">${v.DATA_CRIACAO||'—'}</div></div><div class="trr"><div class="trl">Repetições</div><div class="trv">${Array.isArray(v.reps)?v.reps.length:0}</div></div></div></div>`).join('')||'<div style="padding:20px;text-align:center;font-size:13px;color:var(--text3)">Nenhuma versão registrada</div>';
+function renderH(q,filtro){
+  let dados=receitas.filter(r=>(r.versoes||[]).some(v=>(v.reps||[]).length>0));
+  if(q)dados=dados.filter(r=>r.COD_PA.toLowerCase().includes(q)||r.CLIENTE.toLowerCase().includes(q));
+  if(filtro==='ok')dados=dados.map(r=>({...r,versoes:(r.versoes||[]).map(v=>({...v,reps:(v.reps||[]).filter(rep=>!(rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'))})).filter(v=>v.reps.length>0)})).filter(r=>(r.versoes||[]).length>0);
+  if(filtro==='desvio')dados=dados.map(r=>({...r,versoes:(r.versoes||[]).map(v=>({...v,reps:(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE')})).filter(v=>v.reps.length>0)})).filter(r=>(r.versoes||[]).length>0);
+  const wrap=document.getElementById('hres');
+  if(!dados.length){wrap.innerHTML=`<div class="card" style="text-align:center;font-size:13px;color:var(--text3);padding:20px">Nenhum resultado encontrado</div>`;return;}
+  wrap.innerHTML=dados.map(r=>`
+    <div style="margin-bottom:14px">
+      <div style="background:var(--blue-light);border:0.5px solid var(--border);border-radius:var(--rad-lg) var(--rad-lg) 0 0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:13px;font-weight:700;color:var(--blue)">${r.CLIENTE} — ${fmtCodPAExib(r.COD_PA)}</div><div style="font-size:11px;color:var(--blue);opacity:.7;margin-top:2px">${r.MAQUINA}</div></div>
+        <span style="font-size:11px;color:var(--blue);font-weight:600">${(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).length,0)} rep.</span>
+      </div>
+      ${(r.versoes||[]).map((v,vi)=>`
+        <div>
+          <div class="ver-hdr-block ${v.ATIVA===true||v.ATIVA==='TRUE'?'vigente':'obsoleta'}" style="${vi===0?'':'border-radius:0'}">
+            <div class="ver-hdr-lbl"><i class="ti ti-${v.ATIVA===true||v.ATIVA==='TRUE'?'check-circle':'history'}"></i>v${v.NUMERO_VERSAO} · ${v.ATIVA===true||v.ATIVA==='TRUE'?'Receita vigente':'Receita anterior'}</div>
+            <div class="ver-hdr-right">
+              <span class="ver-hdr-date">${v.DATA_CRIACAO||'—'}</span>
+              <span class="ver-aprov">Aprov. 1: ${v.APROVADOR_1||'—'}${v.APROVADOR_2?' · Aprov. 2: '+v.APROVADOR_2:''}</span>
+            </div>
+          </div>
+          <div class="ver-body-block" style="${vi<(r.versoes||[]).length-1?'border-radius:0':''}">
+            ${(v.reps||[]).length===0?`<div style="padding:10px 14px;font-size:12px;color:var(--text3);background:var(--${v.ATIVA===true||v.ATIVA==='TRUE'?'card':'bg'})">Nenhuma repetição.</div>`:(v.reps||[]).map(rep=>`
+              <div class="rep-item-hist ${v.ATIVA===true||v.ATIVA==='TRUE'?'vigente':'obsoleta'}">
+                <div style="flex:1">
+                  <div class="rep-num-h">OP ${rep.OP_PRODUCAO||'—'}</div>
+                  <div class="rep-meta-h">${rep.OPERADOR||'—'} · ${rep.DATA_HORA||'—'} · Aprov: ${rep.APROVADOR||'—'}</div>
+                </div>
+                <span class="rep-pill-h ${rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'?'pill-dv':'pill-ok'}">${rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'?'Com desvio':'Sem desvio'}</span>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
 }
 
-// ── PENDÊNCIAS ────────────────────────────────────────────
-function renderPend(){
-  const el=document.getElementById('pend-lista');
-  if(!el)return;
-  if(!pendencias.length){el.innerHTML='<div class="card" style="text-align:center;padding:24px"><i class="ti ti-check" style="font-size:28px;color:var(--green)"></i><div style="font-size:13px;color:var(--text3);margin-top:8px">Nenhuma pendência</div></div>';return;}
-  el.innerHTML=pendencias.map(p=>{
-    const r=receitas.find(x=>String(x.ID)===String(p.ID_RECEITA||p.idReceita));
-    return `<div class="pend-card"><div class="pend-hdr"><div class="pend-ic"><i class="ti ti-clock"></i></div><div class="pend-bd"><div class="pend-title">${r?`${r.CLIENTE} · ${fmtCodPAExib(r.COD_PA)}`:'Receita'}</div><div class="pend-sub">Solicitado por <b>${p.SOLICITANTE}</b> · OP <b>${p.OP_PRODUCAO||'—'}</b></div></div><span class="pend-badge">Pendente</span></div><div class="pend-body"><div class="pend-row"><div class="pend-lbl">Parâmetro</div><div class="pend-vals"><div class="pend-para">${p.PARAMETRO}</div></div></div><div class="pend-row"><div class="pend-lbl">De</div><div class="pend-vals"><div class="pend-de">${p.VALOR_ATUAL}</div></div></div><div class="pend-row"><div class="pend-lbl">Para</div><div class="pend-vals"><div class="pend-para">${p.VALOR_PROPOSTO}</div></div></div>${p.JUSTIFICATIVA?`<div class="pend-row"><div class="pend-lbl">Justificativa</div><div class="pend-just">${p.JUSTIFICATIVA}</div></div>`:''}</div><div class="pend-footer"><div class="pend-meta">Aguarda 2ª aprovação</div><div class="pend-actions"><button class="pend-apr" onclick="abrirPinPend('${p.ID}')">Aprovar</button></div></div><div class="pend-pin-wrap" id="ppin-${p.ID}"><div class="pin-w"><div class="pin-t">2ª Aprovação</div><div class="pin-s">PIN do segundo supervisor — diferente do aprovador 1</div><div class="pin-cx"><div class="pcl">Aprovador 1</div><div class="pcv">${p.SOLICITANTE||'—'}</div></div><div class="pin-ds" id="ppd-${p.ID}"><div class="pin-d" id="ppd-${p.ID}-0"></div><div class="pin-d" id="ppd-${p.ID}-1"></div><div class="pin-d" id="ppd-${p.ID}-2"></div><div class="pin-d" id="ppd-${p.ID}-3"></div></div><div class="pin-g"><button class="pib" onclick="pinPend('${p.ID}','1')">1</button><button class="pib" onclick="pinPend('${p.ID}','2')">2</button><button class="pib" onclick="pinPend('${p.ID}','3')">3</button><button class="pib" onclick="pinPend('${p.ID}','4')">4</button><button class="pib" onclick="pinPend('${p.ID}','5')">5</button><button class="pib" onclick="pinPend('${p.ID}','6')">6</button><button class="pib" onclick="pinPend('${p.ID}','7')">7</button><button class="pib" onclick="pinPend('${p.ID}','8')">8</button><button class="pib" onclick="pinPend('${p.ID}','9')">9</button><button class="pib" onclick="pinPend('${p.ID}','del')" style="font-size:16px"><i class="ti ti-backspace"></i></button><button class="pib" onclick="pinPend('${p.ID}','0')">0</button><button class="pib" onclick="pinPend('${p.ID}','ok')" style="background:var(--blue);color:#fff;border-color:var(--blue)"><i class="ti ti-check"></i></button></div><div class="pie" id="ppe-${p.ID}"></div></div></div></div>`;
+function filtrarH(){const q=document.getElementById('hs').value.toLowerCase().trim();renderH(q,filtroH);}
+function setFH(el,t){document.querySelectorAll('#s-hist .fc').forEach(c=>c.classList.remove('fa'));el.classList.add('fa');filtroH=t;renderH(document.getElementById('hs').value.toLowerCase().trim(),t);}
+
+// ── PAINEL ───────────────────────────────────────────────
+
+function atualizarPainel(){
+  const totRec=receitas.length;
+  const totRep=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).length,0),0);
+  const totDv=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0),0);
+  document.getElementById('pm-rec').textContent=totRec;
+  document.getElementById('pm-rep').textContent=totRep;
+  document.getElementById('pm-dv').textContent=totDv;
+  document.getElementById('pm-pend').textContent=pendencias.length;
+  document.getElementById('painel-lista').innerHTML=receitas.map(r=>{
+    const reps=(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).length,0);
+    const dvs=(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0);
+    return `<div style="display:flex;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${r.CLIENTE} · ${r.COD_PA}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${r.MAQUINA}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:600;color:var(--text)">${reps} rep.</div>${dvs>0?`<div style="font-size:11px;color:var(--amber);font-weight:600">${dvs} desvio${dvs!==1?'s':''}</div>`:''}</div></div>`;
   }).join('');
 }
 
-let pendPinBufs={};
-function abrirPinPend(id){
-  pendPinBufs[id]='';
-  document.getElementById('ppin-'+id).classList.toggle('open');
+function chPer(sel){document.getElementById('per-sub').textContent=`Rotogravura · últimos ${sel.value} dias`;}
+
+// ── NOVA RECEITA ─────────────────────────────────────────
+
+function addT(n){
+  const div=document.createElement('div');div.className='tbloco';div.id='tb-'+n;
+  div.innerHTML=`<div class="tbh"><div class="tbhl"><div class="nc">${n}</div><span style="font-size:13px;font-weight:600;color:var(--text)">Estação ${n}</span></div><button class="dbn" onclick="removerEstacao(${n})" aria-label="Remover estação ${n}"><i class="ti ti-trash"></i></button></div>
+  <div class="tg">
+    <div><label>Código da tinta</label><input type="text" placeholder="508.12.0441" oninput="fmtCodTinta(this)" maxlength="11"></div>
+    <div><label>Nome / cor</label><input type="text" placeholder=""></div>
+    <div><label>Viscosidade (s)</label><input type="text" inputmode="decimal"></div>
+    <div><label>Secagem (min:seg)</label><input type="text" inputmode="numeric" placeholder="0:40" oninput="fmtSecagem(this)" onfocus="if(!this.value)this.value='0:'" onblur="if(this.value==='0:')this.value=''" style="width:90px"></div>
+  </div>`;
+  document.getElementById('tw').appendChild(div);
 }
-function updPendDots(id){[0,1,2,3].forEach(i=>{document.getElementById(`ppd-${id}-${i}`).className='pin-d'+((pendPinBufs[id]||'').length>i?' f':'');});}
-async function pinPend(id,k){
-  if(!pendPinBufs[id])pendPinBufs[id]='';
-  if(k==='del'){pendPinBufs[id]=pendPinBufs[id].slice(0,-1);updPendDots(id);return;}
-  if(k==='ok'){
-    if(pendPinBufs[id].length<4){document.getElementById('ppe-'+id).textContent='PIN deve ter 4 dígitos';return;}
-    try{
-      const res=await apiPost({action:'validarPin',pin:pendPinBufs[id]});
-      if(!res.valido){document.getElementById('ppe-'+id).textContent='PIN incorreto';pendPinBufs[id]='';updPendDots(id);return;}
-      const pend=pendencias.find(p=>String(p.ID)===String(id));
-      await aprovarPendenciaAPI(id,res.nome,pend);
-    }catch(e){document.getElementById('ppe-'+id).textContent='Erro: '+e.message;}
-    return;
+
+function sHF(id,on){
+  document.getElementById('hon-'+id).className='to '+(on?'ton':'');
+  document.getElementById('hof-'+id).className='to '+(on?'':'tof');
+  const r=document.getElementById('htr-'+id);
+  if(r){r.style.display=on?'flex':'none';if(on)document.getElementById('hti-'+id)?.focus();}
+}
+
+function removerEstacao(n){
+  document.getElementById('tb-'+n)?.remove();
+  atualizarComplementos();
+}
+
+function atualizarComplementos(){
+  const blocos=Array.from(document.querySelectorAll('.tbloco'));
+  if(!blocos.length) return;
+  const tg=blocos.map(tb=>{
+    const n=parseInt(tb.querySelector('.nc').textContent);
+    const nome=tb.querySelectorAll('input')[1]?.value||'Estação '+n;
+    return{n,nome};
+  });
+  // Camisa, Rolo e Faca: só nas estações com tinta
+  const rowHtml=(prefix)=>tg.map((t,i)=>{
+    const isLast=i===tg.length-1;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;${isLast?'':'border-bottom:0.5px solid var(--border)'}"><div class="nc">${t.n}</div><div style="flex:1;font-size:12px;color:var(--text2)">${t.nome}</div><input id="${prefix}-${t.n}" type="text" inputmode="decimal" style="width:80px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)"></div>`;
+  }).join('');
+  const c=document.getElementById('camisa-rows');if(c)c.innerHTML=rowHtml('camisa');
+  const r=document.getElementById('rolo-rows');if(r)r.innerHTML=rowHtml('rolo');
+  const fa=document.getElementById('faca-rows');if(fa)fa.innerHTML=rowHtml('faca');
+  // Estufas: sempre 9 fixas, independente das tintas
+  const estufaHtml=[1,2,3,4,5,6,7,8,9].map((n,i)=>{
+    const isLast=n===9;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;${isLast?'':'border-bottom:0.5px solid var(--border)'}"><div class="nc">${n}</div><div style="flex:1;font-size:12px;color:var(--text2)">Estufa ${n}</div><input id="estufa-${n}" type="text" inputmode="numeric" style="width:80px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)"></div>`;
+  }).join('');
+  const e=document.getElementById('estufa-rows');if(e)e.innerHTML=estufaHtml;
+}
+
+function sH(n,on){document.getElementById('hon-'+n).className='to '+(on?'ton':'');document.getElementById('hof-'+n).className='to '+(on?'':'tof');const r=document.getElementById('htr-'+n);if(r){r.style.display=on?'flex':'none';if(on)document.getElementById('hti-'+n)?.focus();}}
+
+function salvarCompVals(){
+  // Salvar todos os valores dos complementos antes de sair do passo 2
+  window._compVals = window._compVals || {};
+  ['camisa','rolo','faca'].forEach(prefix=>{
+    [1,2,3,4,5,6,7,8,9].forEach(n=>{
+      const el=document.getElementById(prefix+'-'+n);
+      if(el) window._compVals[prefix+'-'+n] = el.value;
+    });
+  });
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
+    const el=document.getElementById('estufa-'+n);
+    if(el) window._compVals['estufa-'+n] = el.value;
+  });
+  const preOn=document.getElementById('hon-preHot')?.className.includes('ton')||false;
+  const posOn=document.getElementById('hon-posHot')?.className.includes('ton')||false;
+  window._preHot={on:preOn,temp:document.getElementById('hti-preHot')?.value||''};
+  window._posHot={on:posOn,temp:document.getElementById('hti-posHot')?.value||''};
+}
+
+function restaurarCompVals(){
+  if(!window._compVals) return;
+  Object.entries(window._compVals).forEach(([id,val])=>{
+    const el=document.getElementById(id);if(el&&val!==undefined)el.value=val;
+  });
+  if(window._preHot){sHF('preHot',window._preHot.on);const el=document.getElementById('hti-preHot');if(el&&window._preHot.temp)el.value=window._preHot.temp;}
+  if(window._posHot){sHF('posHot',window._posHot.on);const el=document.getElementById('hti-posHot');if(el&&window._posHot.temp)el.value=window._posHot.temp;}
+}
+
+function nStep(n){
+  // Salvar valores ANTES de sair do passo 2
+  if(nsn===2) salvarCompVals();
+  nsn=n;
+  [1,2,3,4].forEach(i=>{const e=document.getElementById('ns'+i);if(e)e.style.display=i===n?'block':'none';});
+  uSB(n);
+  if(n===2&&document.querySelectorAll('.tbloco').length===0){for(let i=1;i<=9;i++)addT(i);}
+  if(n===2){
+    setTimeout(()=>{
+      atualizarComplementos();
+      restaurarCompVals();
+    },100);
   }
-  if(pendPinBufs[id].length>=4)return;
-  pendPinBufs[id]+=k;updPendDots(id);document.getElementById('ppe-'+id).textContent='';
+  if(n===4)bRv();
+  const cx=document.getElementById('pnc');if(cx){const c=document.getElementById('n-cli').value||'—',d=document.getElementById('n-cod').value||'—';cx.textContent=c!=='—'?`${c} · ${d}`:'—';}
 }
+
+function uSB(cur){const lbls=['Cabeçalho','Tintas','Parâmetros','Revisão'];document.getElementById('sbw').innerHTML=`<div class="stb">${lbls.map((l,i)=>{const n=i+1,cls=n<cur?'scd':n===cur?'sca':'sci',ic=n<cur?'<i class="ti ti-check" style="font-size:11px"></i>':n;return `<div class="si"><div class="scc ${cls}">${ic}</div><span class="slb ${n===cur?'slba':''}">${l}</span></div>${n<4?'<div class="sse"></div>':''}`}).join('')}</div>`;}
+
+function bRv(){
+  const cli=document.getElementById('n-cli').value||'—';
+  const cod=document.getElementById('n-cod').value||'—';
+  const serv=document.getElementById('n-serv').value||'—';
+  const maq=document.getElementById('n-maq').value||'—';
+  const oper=document.getElementById('n-oper').value||'—';
+  const preHotOnB=document.getElementById('hon-preHot')?.className.includes('ton')||false;
+  const posHotOnB=document.getElementById('hon-posHot')?.className.includes('ton')||false;
+  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,idx)=>{
+    const n=parseInt(tb.querySelector('.nc').textContent)||idx+1;
+    const ins=tb.querySelectorAll('input');
+    const sr=(ins[3]?.value||'0:0').split(':');
+    return{n,cod:ins[0]?.value||'',nome:ins[1]?.value||'—',camisa:document.getElementById('camisa-'+n)?.value||'',visc:ins[2]?.value||'—',rolo:document.getElementById('rolo-'+n)?.value||'',faca:document.getElementById('faca-'+n)?.value||'',secm:sr[0]||'0',secs:sr[1]||'0',estufa:document.getElementById('estufa-'+n)?.value||''};
+  });
+  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
+  const pm=[
+    {l:'Tensão Freio Desbob.',v:pbInputs[0]?.value||'—',u:'N'},
+    {l:'Pressão Compactador',v:pbInputs[1]?.value||'—',u:'Bar'},
+    {l:'Avanço CR',v:pbInputs[2]?.value||'—',u:'N'},
+    {l:'Velocidade',v:pbInputs[3]?.value||'—',u:'m/min'},
+    {l:'Taxa de Redução',v:pbInputs[4]?.value||'—',u:'%'},
+    {l:'Tensão Rebobinador',v:pbInputs[5]?.value||'—',u:'N'},
+    {l:'Avanço',v:pbInputs[6]?.value||'—',u:'N'},
+    {l:'Posição Compactador',v:pbInputs[7]?.value||'—',u:''},
+    {l:'Temp. Ambiente',v:pbInputs[8]?.value||'—',u:'°C'},
+    {l:'Largura do Filme',v:pbInputs[9]?.value||'—',u:'mm'},
+    {l:'Pressão Cil. Borracha',v:pbInputs[10]?.value||'—',u:''},
+  ];
+  const obs=document.getElementById('n-obs')?.value||'';
+  // Estufas no resumo: todas as 9 posições, incluindo sem tinta
+  const estufaMapB={};ts.forEach(t=>{if(t.estufa)estufaMapB[t.n]=t.estufa;});
+  for(let n=1;n<=9;n++){const el=document.getElementById('estufa-'+n);if(el&&el.value&&!estufaMapB[n])estufaMapB[n]=el.value;}
+  const estufaHtml=Object.entries(estufaMapB).sort((a,b)=>a[0]-b[0]).map(([n,temp])=>{const tinta=ts.find(t=>t.n===parseInt(n));return`<div class="er"><div class="en">${n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${tinta?.nome||'— sem tinta —'}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${temp}°C</div></div>`;}).join('');
+  document.getElementById('rvw').innerHTML=`
+    <div class="sl">Identificação</div>
+    <div class="hg" style="margin-bottom:8px">
+      <div><div class="fl">Cliente</div><div class="fv fvac">${cli}</div></div>
+      <div><div class="fl">Máquina</div><div class="fv">${maq}</div></div>
+      <div><div class="fl">Cód. PA</div><div class="fv">${cod}</div></div>
+      <div><div class="fl">Operador</div><div class="fv">${oper}</div></div>
+    </div>
+    <div style="margin-bottom:12px"><div class="fl">Serviço</div><div class="fv" style="font-size:12px;margin-top:2px">${serv}</div></div>
+    ${preHotOnB?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--amber-light);border-radius:var(--rad);margin-bottom:8px"><i class="ti ti-flame" style="color:var(--amber)"></i><span style="font-size:12px;font-weight:600;color:var(--amber)">PRÉ HOT ligado — ${document.getElementById('hti-preHot')?.value||'—'}°C</span></div>`:''}
+    <div class="sl" style="margin-top:4px">Estações — ${ts.length} tinta${ts.length!==1?'s':''}</div>
+    ${ts.map(t=>`<div class="tr2"><div class="nc">${t.n}</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${t.cod}${t.camisa?' · Camisa: '+t.camisa:''}</div><div class="chips">${t.visc!=='—'?`<div class="chip">Visc. <b>${t.visc} s</b></div>`:''}<div class="chip">Sec. <b>${secStr(parseInt(t.secm),parseInt(t.secs))}</b></div>${t.rolo?`<div class="chip">Rolo <b>${t.rolo}</b></div>`:''}${t.faca?`<div class="chip">Faca <b>${t.faca} Bar</b></div>`:''}${t.estufa?`<div class="chip cth">Estufa <b>${t.estufa}°C</b></div>`:''}${t.preHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PRÉ HOT <b>${t.preTemp}°C</b></div>`:''}${t.posHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PÓS HOT <b>${t.posTemp}°C</b></div>`:''}</div></div></div>`).join('')}
+    <div class="sl" style="margin-top:12px">Parâmetros da máquina</div>
+    <div class="pb" style="margin-bottom:12px">${pm.map(p=>`<div class="pbox"><div class="pl">${p.l}</div><div class="pv" style="font-size:13px">${p.v}${p.u?' <span class="pu">'+p.u+'</span>':''}</div></div>`).join('')}</div>
+    ${estufaHtml?`<div class="sl">Estufas por estação</div>${estufaHtml}`:''}
+    ${posHotOnB?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--amber-light);border-radius:var(--rad);margin-bottom:8px"><i class="ti ti-flame" style="color:var(--amber)"></i><span style="font-size:12px;font-weight:600;color:var(--amber)">PÓS HOT ligado — ${document.getElementById('hti-posHot')?.value||'—'}°C</span></div>`:''}
+    ${obs?`<div class="sl" style="margin-top:12px">Observações técnicas</div><div class="oi"><div class="od"></div><div class="ot">${obs}</div></div>`:''}
+  `;
+}
+
+// ── SUCESSO ──────────────────────────────────────────────
+
+function showSuc(t,s,rows,w,dest){
+  document.getElementById('suc-ic').style.background=w?'var(--amber-light)':'var(--green-light)';
+  document.getElementById('suc-ic').innerHTML=w?`<i class="ti ti-alert-triangle" style="font-size:28px;color:var(--amber)"></i>`:`<i class="ti ti-check" style="font-size:30px;color:var(--green)"></i>`;
+  document.getElementById('suc-t').textContent=t;document.getElementById('suc-s').textContent=s;
+  document.getElementById('suc-tr').innerHTML=rows.map(r=>`<div class="trr"><span class="trl">${r.l}</span><span class="trv" style="color:${r.b?'var(--blue)':'var(--text)'}">${r.v}</span></div>`).join('');
+  document.getElementById('suc-btn').onclick=()=>{ir(dest||'s-lista');rst();};
+  ir('s-suc');
+}
+
+// ── NAVEGAÇÃO ────────────────────────────────────────────
+
+function showLoading(msg){
+  const el=document.getElementById('overlay-loading');
+  const ml=document.getElementById('overlay-msg');
+  if(el){el.classList.add('active');if(ml)ml.textContent=msg||'Salvando...';}
+}
+function hideLoading(){
+  const el=document.getElementById('overlay-loading');
+  if(el)el.classList.remove('active');
+}
+
+function secStr(m,s){return m>0?`${m} min ${s} s`:`${s} s`;}
+function fmtCodPAExib(v){
+  if(!v)return'—';
+  const s=String(v).replace(/\D/g,'');
+  if(s.length===10)return s.slice(0,3)+'.'+s.slice(3,6)+'.'+s.slice(6);
+  if(s.length===9)return s.slice(0,3)+'.'+s.slice(3,6)+'.'+s.slice(6);
+  return String(v);
+}
+function secTotal(m,s){return m*60+s;}
+
+function irRaw(id){document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function ir(id){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const pill=document.getElementById('tpp'),sb=document.getElementById('sbw');
+  const repSteps={'s-rep':1,'s-rev':2,'s-pin-r':3};
+  const map={
+    's-lista':['Receitas de Produto','Impressão · Rotogravura',true,false],
+    's-rec':[null,null,true,false],
+    's-nova':['Nova Receita','Cadastro com aprovação por PIN',false,true],
+    's-pin-n':['Aprovação por PIN','Nova receita',false,false],
+    's-hist':['Histórico de Repetição','Por receita · Rotogravura',false,false],
+    's-suc':['Concluído','',false,false],
+    's-rep':['Registro de Repetição',null,false,false],
+    's-rev':['Revisão',null,false,false],
+    's-pin-r':['Aprovação por PIN',null,false,false],
+  };
+  if(map[id]){
+    if(map[id][0])document.getElementById('tpt').textContent=map[id][0];
+    if(map[id][1])document.getElementById('tps').textContent=map[id][1];
+    pill.style.display=map[id][2]?'':'none';
+    if(!map[id][3]&&!repSteps[id])sb.innerHTML='';
+  }
+  if(repSteps[id]){const cur=repSteps[id];const lbls=['Registro','Revisão','Aprovação'];sb.innerHTML=`<div class="stb">${lbls.map((l,i)=>{const n=i+1,cls=n<cur?'scd':n===cur?'sca':'sci',ic=n<cur?'<i class="ti ti-check" style="font-size:11px"></i>':n;return `<div class="si"><div class="scc ${cls}">${ic}</div><span class="slb ${n===cur?'slba':''}">${l}</span></div>${n<3?'<div class="sse"></div>':''}`}).join('')}</div>`;}
+  if(id==='s-hist'){filtroH='todos';document.querySelectorAll('#s-hist .fc').forEach((c,i)=>c.classList.toggle('fa',i===0));renderH('',filtroH);}
+  if(id==='s-rep'){rRep();document.getElementById('oper-inp').value='';document.getElementById('op-inp').value='';}
+  if(id==='s-nova')nStep(nsn);
+  if(id==='s-pin-n'){pinBufN='';updDotsN();document.getElementById('pne').textContent='';}
+  if(id==='s-pin-r'){pinBufR='';updDotsR();document.getElementById('pre2').textContent='';}
+}
+
+function tIr(sc,tid,t,s){
+  document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('ta'));
+  document.getElementById(tid).classList.add('ta');
+  nsn=1;ir(sc);
+  document.getElementById('tpt').textContent=t;
+  document.getElementById('tps').textContent=s;
+}
+
+function rst(){pinBufN='';pinBufR='';nsn=1;window._compVals=null;window._preHot=null;window._posHot=null;}
+
+document.addEventListener('input',e=>{
+  if(e.target.id==='oper-inp'||e.target.id==='op-inp'||['jvisc-','jsec-','jparam-'].some(p=>e.target.id.startsWith(p)))uBtn();
+});
+
+
+// ── FORMATAÇÃO AUTOMÁTICA ─────────────────────────────────
+
+function fmtSecagem(el) {
+  let v = el.value.replace(/[^0-9]/g,'');
+  if(v.length > 2) v = v.slice(0,v.length-2)+':'+v.slice(-2);
+  else if(v.length===2) v='0:'+v;
+  else if(v.length===1) v='0:0'+v;
+  el.value=v;
+}
+
+function fmtCodPA(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,10);
+  if(v.length>6) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+  else if(v.length>3) v = v.slice(0,3)+'.'+v.slice(3);
+  el.value = v;
+}
+
+function fmtCodTinta(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,9);
+  if(v.length>5) v = v.slice(0,3)+'.'+v.slice(3,5)+'.'+v.slice(5);
+  else if(v.length>3) v = v.slice(0,3)+'.'+v.slice(3);
+  el.value = v;
+}
+
+// ── AVISO AO SAIR ────────────────────────────────────────
+window.addEventListener('beforeunload', function(e) {
+  const operador = document.getElementById('oper-inp')?.value.trim();
+  const novaCli = document.getElementById('n-cli')?.value.trim();
+  const novaServ = document.getElementById('n-serv')?.value.trim();
+  const temDados = operador || novaCli || novaServ;
+  if(temDados) {
+    e.preventDefault();
+    e.returnValue = 'Você tem dados não salvos. Deseja realmente sair?';
+    return e.returnValue;
+  }
+});
+
+// ── INIT ─────────────────────────────────────────────────
+carregarReceitas();
+carregarPendencias();
+</script>
+</body>
+</html>function renderPend(){
+  if(pendencias.length===0){document.getElementById('pend-list').innerHTML='<div style="padding:24px 0;text-align:center;font-size:13px;color:var(--text3)">Nenhuma pendência no momento.</div>';return;}
+  document.getElementById('pend-list').innerHTML=pendencias.map(p=>`
+    <div class="pend-card" id="pc-${p.ID}">
+      <div class="pend-hdr"><div class="pend-ic"><i class="ti ti-file-pencil"></i></div><div class="pend-bd"><div class="pend-title">${p.CLI||'Receita'}</div><div class="pend-sub">Solicitado por <b>${p.SOLICITANTE}</b> · OP <b>${p.OP_PRODUCAO||'—'}</b></div></div><span class="pend-badge">pendente</span></div>
+      <div class="pend-body"><div class="pend-row"><div class="pend-lbl">${p.PARAMETRO}</div><div class="pend-vals"><span class="pend-de">De: ${p.VALOR_ATUAL}</span><span class="pend-para">Para: ${p.VALOR_PROPOSTO}</span><div class="pend-just">${p.JUSTIFICATIVA}</div></div></div></div>
+      <div class="pend-footer"><div class="pend-meta">Solicitante: <b>${p.SOLICITANTE}</b></div><div class="pend-actions"><button class="pend-rej" onclick="rejPend('${p.ID}')">Rejeitar</button><button class="pend-apr" onclick="abrirPendPin('${p.ID}')">Aprovar</button></div></div>
+      <div class="pend-pin-wrap" id="ppw-${p.ID}">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5">Digite seu PIN. Aprovador não pode ser <b>${p.SOLICITANTE}</b>.</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px"><div class="pin-d" id="ppd-${p.ID}-0"></div><div class="pin-d" id="ppd-${p.ID}-1"></div><div class="pin-d" id="ppd-${p.ID}-2"></div><div class="pin-d" id="ppd-${p.ID}-3"></div></div>
+        <div class="pin-g" style="gap:6px">
+          <button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','1')">1</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','2')">2</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','3')">3</button>
+          <button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','4')">4</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','5')">5</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','6')">6</button>
+          <button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','7')">7</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','8')">8</button><button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','9')">9</button>
+          <button class="pib" style="padding:10px 0;font-size:14px" onclick="ppPend('${p.ID}','back')">⌫</button>
+          <button class="pib" style="padding:10px 0;font-size:16px" onclick="ppPend('${p.ID}','0')">0</button>
+          <button class="pib" style="padding:10px 0;font-size:12px;font-weight:700;background:var(--blue-light);color:var(--blue)" onclick="ppPend('${p.ID}','ok')">OK</button>
+        </div>
+        <div class="pie" id="ppe-${p.ID}" style="margin-top:6px"></div>
+      </div>
+    </div>`).join('');
+}
+
+function abrirPendPin(id){if(!pendPinBufs[id])pendPinBufs[id]='';document.querySelectorAll('.pend-pin-wrap').forEach(p=>p.classList.remove('open'));document.getElementById('ppw-'+id)?.classList.add('open');}
+
+function ppPend(id,v){
+  if(!pendPinBufs[id])pendPinBufs[id]='';
+  const err=document.getElementById('ppe-'+id);
+  const pend=pendencias.find(p=>String(p.ID)===String(id));
+  if(v==='back'){pendPinBufs[id]=pendPinBufs[id].slice(0,-1);}
+  else if(v==='ok'){
+    const aprov2=SUPERVISORES[pendPinBufs[id]];
+    if(aprov2&&aprov2!==pend?.SOLICITANTE){
+      err.textContent='';pendPinBufs[id]='';updPendDots(id);
+      aprovarPendenciaAPI(id,aprov2,pend);
+    }else if(aprov2===pend?.SOLICITANTE){err.textContent='Você não pode aprovar sua própria solicitação.';pendPinBufs[id]='';}
+    else{err.textContent='PIN incorreto.';pendPinBufs[id]='';}
+  }else{if(pendPinBufs[id].length<4)pendPinBufs[id]+=v;}
+  updPendDots(id);
+}
+
 async function aprovarPendenciaAPI(idPendencia,aprovador2,pend){
   showLoading('Aprovando pendência...');
   try{
-    await apiPost({action:'aprovarPendencia',idPendencia,aprovador2,idReceita:pend?.ID_RECEITA||recIdx});
-    const novasReceitas=await apiGet('getReceitas');
-    receitas=novasReceitas.map(r=>({...r,tintas:Array.isArray(r.tintas)?r.tintas:[],parametros:Array.isArray(r.parametros)?(r.parametros[0]||{}):(r.parametros||{}),versoes:Array.isArray(r.versoes)?r.versoes:[]}));
-    rL(receitas);
+    await apiPost({action:'aprovarPendencia',idPendencia,aprovador2,idReceita:pend.ID_RECEITA||recIdx});
+    await carregarReceitas();
     await carregarPendencias();
+    renderPend();
     hideLoading();
-    showSuc('Nova versão criada!','A receita foi atualizada.',[{l:'Aprovador 2',v:aprovador2},{l:'Data',v:new Date().toLocaleDateString('pt-BR')},{l:'Status',v:'Aprovada'}],true);
-  }catch(e){hideLoading();console.error(e);}
+    hideLoading();
+    showSuc('Nova versão criada!',`A receita foi atualizada. Versão anterior preservada no histórico.`,[{l:'Aprovador 2',v:aprovador2},{l:'Data',v:new Date().toLocaleDateString('pt-BR')},{l:'Status',v:'Aprovada'}],false,'s-hist');
+  }catch(e){console.error('Erro ao aprovar pendência:',e);}
 }
 
-// ── PAINEL ────────────────────────────────────────────────
-function updDotsP(){[0,1,2,3].forEach(i=>{document.getElementById('pd-p-'+i).className='pin-d'+(i<pinBufP.length?' f':'');});}
-async function pinP(k){
-  if(k==='del'){pinBufP=pinBufP.slice(0,-1);updDotsP();return;}
-  if(k==='ok'){
-    if(pinBufP.length<4){document.getElementById('ppe').textContent='PIN deve ter 4 dígitos';return;}
-    try{
-      const res=await apiPost({action:'validarPin',pin:pinBufP});
-      if(!res.valido){document.getElementById('ppe').textContent='PIN incorreto';pinBufP='';updDotsP();return;}
-      document.getElementById('painel-lock').style.display='none';
-      document.getElementById('painel-conteudo').style.display='block';
-      document.getElementById('painel-met').innerHTML=`<div class="mt"><div class="ml">Receitas ativas</div><div class="mv">${receitas.length}</div></div><div class="mt"><div class="ml">Pendências</div><div class="mv">${pendencias.length}</div></div>`;
-      document.getElementById('painel-lista').innerHTML=receitas.slice(0,5).map(r=>`<div class="li" onclick="abrirRec(${r.ID})"><div class="lic"><i class="ti ti-file-description"></i></div><div class="lb"><div class="lt">${r.CLIENTE} — ${fmtCodPAExib(r.COD_PA)}</div><div class="ls">${r.SERVICO}</div></div></div>`).join('');
-    }catch(e){document.getElementById('ppe').textContent='Erro: '+e.message;}
-    return;
+function rejPend(id){pendencias=pendencias.filter(p=>String(p.ID)!==String(id));uPendBadge();renderPend();}
+function updPendDots(id){for(let i=0;i<4;i++){const d=document.getElementById(`ppd-${id}-${i}`);if(d)d.classList.toggle('f',i<(pendPinBufs[id]||'').length);}}
+
+// ── HISTÓRICO ────────────────────────────────────────────
+
+function atualizarHistorico(){
+  const totRep=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).length,0),0);
+  const totDv=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0),0);
+  const totVer=receitas.reduce((s,r)=>s+(r.versoes||[]).length,0);
+  document.getElementById('h-tot').textContent=totRep;
+  document.getElementById('h-dv').textContent=totDv;
+  document.getElementById('h-ver').textContent=totVer;
+  document.getElementById('h-taxa').textContent=totRep>0?Math.round(((totRep-totDv)/totRep)*100)+'%':'—';
+  renderH('',filtroH);
+}
+
+function renderH(q,filtro){
+  let dados=receitas.filter(r=>(r.versoes||[]).some(v=>(v.reps||[]).length>0));
+  if(q)dados=dados.filter(r=>r.COD_PA.toLowerCase().includes(q)||r.CLIENTE.toLowerCase().includes(q));
+  if(filtro==='ok')dados=dados.map(r=>({...r,versoes:(r.versoes||[]).map(v=>({...v,reps:(v.reps||[]).filter(rep=>!(rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'))})).filter(v=>v.reps.length>0)})).filter(r=>(r.versoes||[]).length>0);
+  if(filtro==='desvio')dados=dados.map(r=>({...r,versoes:(r.versoes||[]).map(v=>({...v,reps:(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE')})).filter(v=>v.reps.length>0)})).filter(r=>(r.versoes||[]).length>0);
+  const wrap=document.getElementById('hres');
+  if(!dados.length){wrap.innerHTML=`<div class="card" style="text-align:center;font-size:13px;color:var(--text3);padding:20px">Nenhum resultado encontrado</div>`;return;}
+  wrap.innerHTML=dados.map(r=>`
+    <div style="margin-bottom:14px">
+      <div style="background:var(--blue-light);border:0.5px solid var(--border);border-radius:var(--rad-lg) var(--rad-lg) 0 0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:13px;font-weight:700;color:var(--blue)">${r.CLIENTE} — ${fmtCodPAExib(r.COD_PA)}</div><div style="font-size:11px;color:var(--blue);opacity:.7;margin-top:2px">${r.MAQUINA}</div></div>
+        <span style="font-size:11px;color:var(--blue);font-weight:600">${(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).length,0)} rep.</span>
+      </div>
+      ${(r.versoes||[]).map((v,vi)=>`
+        <div>
+          <div class="ver-hdr-block ${v.ATIVA===true||v.ATIVA==='TRUE'?'vigente':'obsoleta'}" style="${vi===0?'':'border-radius:0'}">
+            <div class="ver-hdr-lbl"><i class="ti ti-${v.ATIVA===true||v.ATIVA==='TRUE'?'check-circle':'history'}"></i>v${v.NUMERO_VERSAO} · ${v.ATIVA===true||v.ATIVA==='TRUE'?'Receita vigente':'Receita anterior'}</div>
+            <div class="ver-hdr-right">
+              <span class="ver-hdr-date">${v.DATA_CRIACAO||'—'}</span>
+              <span class="ver-aprov">Aprov. 1: ${v.APROVADOR_1||'—'}${v.APROVADOR_2?' · Aprov. 2: '+v.APROVADOR_2:''}</span>
+            </div>
+          </div>
+          <div class="ver-body-block" style="${vi<(r.versoes||[]).length-1?'border-radius:0':''}">
+            ${(v.reps||[]).length===0?`<div style="padding:10px 14px;font-size:12px;color:var(--text3);background:var(--${v.ATIVA===true||v.ATIVA==='TRUE'?'card':'bg'})">Nenhuma repetição.</div>`:(v.reps||[]).map(rep=>`
+              <div class="rep-item-hist ${v.ATIVA===true||v.ATIVA==='TRUE'?'vigente':'obsoleta'}">
+                <div style="flex:1">
+                  <div class="rep-num-h">OP ${rep.OP_PRODUCAO||'—'}</div>
+                  <div class="rep-meta-h">${rep.OPERADOR||'—'} · ${rep.DATA_HORA||'—'} · Aprov: ${rep.APROVADOR||'—'}</div>
+                </div>
+                <span class="rep-pill-h ${rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'?'pill-dv':'pill-ok'}">${rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE'?'Com desvio':'Sem desvio'}</span>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+function filtrarH(){const q=document.getElementById('hs').value.toLowerCase().trim();renderH(q,filtroH);}
+function setFH(el,t){document.querySelectorAll('#s-hist .fc').forEach(c=>c.classList.remove('fa'));el.classList.add('fa');filtroH=t;renderH(document.getElementById('hs').value.toLowerCase().trim(),t);}
+
+// ── PAINEL ───────────────────────────────────────────────
+
+function atualizarPainel(){
+  const totRec=receitas.length;
+  const totRep=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).length,0),0);
+  const totDv=receitas.reduce((s,r)=>s+(r.versoes||[]).reduce((s2,v)=>s2+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0),0);
+  document.getElementById('pm-rec').textContent=totRec;
+  document.getElementById('pm-rep').textContent=totRep;
+  document.getElementById('pm-dv').textContent=totDv;
+  document.getElementById('pm-pend').textContent=pendencias.length;
+  document.getElementById('painel-lista').innerHTML=receitas.map(r=>{
+    const reps=(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).length,0);
+    const dvs=(r.versoes||[]).reduce((s,v)=>s+(v.reps||[]).filter(rep=>rep.TEM_DESVIO===true||rep.TEM_DESVIO==='TRUE').length,0);
+    return `<div style="display:flex;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${r.CLIENTE} · ${r.COD_PA}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${r.MAQUINA}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:12px;font-weight:600;color:var(--text)">${reps} rep.</div>${dvs>0?`<div style="font-size:11px;color:var(--amber);font-weight:600">${dvs} desvio${dvs!==1?'s':''}</div>`:''}</div></div>`;
+  }).join('');
+}
+
+function chPer(sel){document.getElementById('per-sub').textContent=`Rotogravura · últimos ${sel.value} dias`;}
+
+// ── NOVA RECEITA ─────────────────────────────────────────
+
+function addT(n){
+  const div=document.createElement('div');div.className='tbloco';div.id='tb-'+n;
+  div.innerHTML=`<div class="tbh"><div class="tbhl"><div class="nc">${n}</div><span style="font-size:13px;font-weight:600;color:var(--text)">Estação ${n}</span></div><button class="dbn" onclick="removerEstacao(${n})" aria-label="Remover estação ${n}"><i class="ti ti-trash"></i></button></div>
+  <div class="tg">
+    <div><label>Código da tinta</label><input type="text" placeholder="508.12.0441" oninput="fmtCodTinta(this)" maxlength="11"></div>
+    <div><label>Nome / cor</label><input type="text" placeholder=""></div>
+    <div><label>Viscosidade (s)</label><input type="text" inputmode="decimal"></div>
+    <div><label>Secagem (min:seg)</label><input type="text" inputmode="numeric" placeholder="0:40" oninput="fmtSecagem(this)" onfocus="if(!this.value)this.value='0:'" onblur="if(this.value==='0:')this.value=''" style="width:90px"></div>
+  </div>`;
+  document.getElementById('tw').appendChild(div);
+}
+
+function sHF(id,on){
+  document.getElementById('hon-'+id).className='to '+(on?'ton':'');
+  document.getElementById('hof-'+id).className='to '+(on?'':'tof');
+  const r=document.getElementById('htr-'+id);
+  if(r){r.style.display=on?'flex':'none';if(on)document.getElementById('hti-'+id)?.focus();}
+}
+
+function removerEstacao(n){
+  document.getElementById('tb-'+n)?.remove();
+  atualizarComplementos();
+}
+
+function atualizarComplementos(){
+  const blocos=Array.from(document.querySelectorAll('.tbloco'));
+  if(!blocos.length) return;
+  const tg=blocos.map(tb=>{
+    const n=parseInt(tb.querySelector('.nc').textContent);
+    const nome=tb.querySelectorAll('input')[1]?.value||'Estação '+n;
+    return{n,nome};
+  });
+  // Camisa, Rolo e Faca: só nas estações com tinta
+  const rowHtml=(prefix)=>tg.map((t,i)=>{
+    const isLast=i===tg.length-1;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;${isLast?'':'border-bottom:0.5px solid var(--border)'}"><div class="nc">${t.n}</div><div style="flex:1;font-size:12px;color:var(--text2)">${t.nome}</div><input id="${prefix}-${t.n}" type="text" inputmode="decimal" style="width:80px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)"></div>`;
+  }).join('');
+  const c=document.getElementById('camisa-rows');if(c)c.innerHTML=rowHtml('camisa');
+  const r=document.getElementById('rolo-rows');if(r)r.innerHTML=rowHtml('rolo');
+  const fa=document.getElementById('faca-rows');if(fa)fa.innerHTML=rowHtml('faca');
+  // Estufas: sempre 9 fixas, independente das tintas
+  const estufaHtml=[1,2,3,4,5,6,7,8,9].map((n,i)=>{
+    const isLast=n===9;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;${isLast?'':'border-bottom:0.5px solid var(--border)'}"><div class="nc">${n}</div><div style="flex:1;font-size:12px;color:var(--text2)">Estufa ${n}</div><input id="estufa-${n}" type="text" inputmode="numeric" style="width:80px;font-size:12px;padding:6px 9px;text-align:center;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);outline:none;font-family:var(--font-sans)"></div>`;
+  }).join('');
+  const e=document.getElementById('estufa-rows');if(e)e.innerHTML=estufaHtml;
+}
+
+function sH(n,on){document.getElementById('hon-'+n).className='to '+(on?'ton':'');document.getElementById('hof-'+n).className='to '+(on?'':'tof');const r=document.getElementById('htr-'+n);if(r){r.style.display=on?'flex':'none';if(on)document.getElementById('hti-'+n)?.focus();}}
+
+function salvarCompVals(){
+  // Salvar todos os valores dos complementos antes de sair do passo 2
+  window._compVals = window._compVals || {};
+  ['camisa','rolo','faca'].forEach(prefix=>{
+    [1,2,3,4,5,6,7,8,9].forEach(n=>{
+      const el=document.getElementById(prefix+'-'+n);
+      if(el) window._compVals[prefix+'-'+n] = el.value;
+    });
+  });
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
+    const el=document.getElementById('estufa-'+n);
+    if(el) window._compVals['estufa-'+n] = el.value;
+  });
+  const preOn=document.getElementById('hon-preHot')?.className.includes('ton')||false;
+  const posOn=document.getElementById('hon-posHot')?.className.includes('ton')||false;
+  window._preHot={on:preOn,temp:document.getElementById('hti-preHot')?.value||''};
+  window._posHot={on:posOn,temp:document.getElementById('hti-posHot')?.value||''};
+}
+
+function restaurarCompVals(){
+  if(!window._compVals) return;
+  Object.entries(window._compVals).forEach(([id,val])=>{
+    const el=document.getElementById(id);if(el&&val!==undefined)el.value=val;
+  });
+  if(window._preHot){sHF('preHot',window._preHot.on);const el=document.getElementById('hti-preHot');if(el&&window._preHot.temp)el.value=window._preHot.temp;}
+  if(window._posHot){sHF('posHot',window._posHot.on);const el=document.getElementById('hti-posHot');if(el&&window._posHot.temp)el.value=window._posHot.temp;}
+}
+
+function nStep(n){
+  // Salvar valores ANTES de sair do passo 2
+  if(nsn===2) salvarCompVals();
+  nsn=n;
+  [1,2,3,4].forEach(i=>{const e=document.getElementById('ns'+i);if(e)e.style.display=i===n?'block':'none';});
+  uSB(n);
+  if(n===2&&document.querySelectorAll('.tbloco').length===0){for(let i=1;i<=9;i++)addT(i);}
+  if(n===2){
+    setTimeout(()=>{
+      atualizarComplementos();
+      restaurarCompVals();
+    },100);
   }
-  if(pinBufP.length>=4)return;
-  pinBufP+=k;updDotsP();document.getElementById('ppe').textContent='';
+  if(n===4)bRv();
+  const cx=document.getElementById('pnc');if(cx){const c=document.getElementById('n-cli').value||'—',d=document.getElementById('n-cod').value||'—';cx.textContent=c!=='—'?`${c} · ${d}`:'—';}
 }
 
+function uSB(cur){const lbls=['Cabeçalho','Tintas','Parâmetros','Revisão'];document.getElementById('sbw').innerHTML=`<div class="stb">${lbls.map((l,i)=>{const n=i+1,cls=n<cur?'scd':n===cur?'sca':'sci',ic=n<cur?'<i class="ti ti-check" style="font-size:11px"></i>':n;return `<div class="si"><div class="scc ${cls}">${ic}</div><span class="slb ${n===cur?'slba':''}">${l}</span></div>${n<4?'<div class="sse"></div>':''}`}).join('')}</div>`;}
+
+function bRv(){
+  const cli=document.getElementById('n-cli').value||'—';
+  const cod=document.getElementById('n-cod').value||'—';
+  const serv=document.getElementById('n-serv').value||'—';
+  const maq=document.getElementById('n-maq').value||'—';
+  const oper=document.getElementById('n-oper').value||'—';
+  const preHotOnB=document.getElementById('hon-preHot')?.className.includes('ton')||false;
+  const posHotOnB=document.getElementById('hon-posHot')?.className.includes('ton')||false;
+  const ts=Array.from(document.querySelectorAll('.tbloco')).map((tb,idx)=>{
+    const n=parseInt(tb.querySelector('.nc').textContent)||idx+1;
+    const ins=tb.querySelectorAll('input');
+    const sr=(ins[3]?.value||'0:0').split(':');
+    return{n,cod:ins[0]?.value||'',nome:ins[1]?.value||'—',camisa:document.getElementById('camisa-'+n)?.value||'',visc:ins[2]?.value||'—',rolo:document.getElementById('rolo-'+n)?.value||'',faca:document.getElementById('faca-'+n)?.value||'',secm:sr[0]||'0',secs:sr[1]||'0',estufa:document.getElementById('estufa-'+n)?.value||''};
+  });
+  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
+  const pm=[
+    {l:'Tensão Freio Desbob.',v:pbInputs[0]?.value||'—',u:'N'},
+    {l:'Pressão Compactador',v:pbInputs[1]?.value||'—',u:'Bar'},
+    {l:'Avanço CR',v:pbInputs[2]?.value||'—',u:'N'},
+    {l:'Velocidade',v:pbInputs[3]?.value||'—',u:'m/min'},
+    {l:'Taxa de Redução',v:pbInputs[4]?.value||'—',u:'%'},
+    {l:'Tensão Rebobinador',v:pbInputs[5]?.value||'—',u:'N'},
+    {l:'Avanço',v:pbInputs[6]?.value||'—',u:'N'},
+    {l:'Posição Compactador',v:pbInputs[7]?.value||'—',u:''},
+    {l:'Temp. Ambiente',v:pbInputs[8]?.value||'—',u:'°C'},
+    {l:'Largura do Filme',v:pbInputs[9]?.value||'—',u:'mm'},
+    {l:'Pressão Cil. Borracha',v:pbInputs[10]?.value||'—',u:''},
+  ];
+  const obs=document.getElementById('n-obs')?.value||'';
+  // Estufas no resumo: todas as 9 posições, incluindo sem tinta
+  const estufaMapB={};ts.forEach(t=>{if(t.estufa)estufaMapB[t.n]=t.estufa;});
+  for(let n=1;n<=9;n++){const el=document.getElementById('estufa-'+n);if(el&&el.value&&!estufaMapB[n])estufaMapB[n]=el.value;}
+  const estufaHtml=Object.entries(estufaMapB).sort((a,b)=>a[0]-b[0]).map(([n,temp])=>{const tinta=ts.find(t=>t.n===parseInt(n));return`<div class="er"><div class="en">${n}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">${tinta?.nome||'— sem tinta —'}</div></div><div class="tbdg tbon"><i class="ti ti-flame" style="font-size:11px;vertical-align:-1px"></i> ${temp}°C</div></div>`;}).join('');
+  document.getElementById('rvw').innerHTML=`
+    <div class="sl">Identificação</div>
+    <div class="hg" style="margin-bottom:8px">
+      <div><div class="fl">Cliente</div><div class="fv fvac">${cli}</div></div>
+      <div><div class="fl">Máquina</div><div class="fv">${maq}</div></div>
+      <div><div class="fl">Cód. PA</div><div class="fv">${cod}</div></div>
+      <div><div class="fl">Operador</div><div class="fv">${oper}</div></div>
+    </div>
+    <div style="margin-bottom:12px"><div class="fl">Serviço</div><div class="fv" style="font-size:12px;margin-top:2px">${serv}</div></div>
+    ${preHotOnB?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--amber-light);border-radius:var(--rad);margin-bottom:8px"><i class="ti ti-flame" style="color:var(--amber)"></i><span style="font-size:12px;font-weight:600;color:var(--amber)">PRÉ HOT ligado — ${document.getElementById('hti-preHot')?.value||'—'}°C</span></div>`:''}
+    <div class="sl" style="margin-top:4px">Estações — ${ts.length} tinta${ts.length!==1?'s':''}</div>
+    ${ts.map(t=>`<div class="tr2"><div class="nc">${t.n}</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">${t.nome}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${t.cod}${t.camisa?' · Camisa: '+t.camisa:''}</div><div class="chips">${t.visc!=='—'?`<div class="chip">Visc. <b>${t.visc} s</b></div>`:''}<div class="chip">Sec. <b>${secStr(parseInt(t.secm),parseInt(t.secs))}</b></div>${t.rolo?`<div class="chip">Rolo <b>${t.rolo}</b></div>`:''}${t.faca?`<div class="chip">Faca <b>${t.faca} Bar</b></div>`:''}${t.estufa?`<div class="chip cth">Estufa <b>${t.estufa}°C</b></div>`:''}${t.preHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PRÉ HOT <b>${t.preTemp}°C</b></div>`:''}${t.posHot?`<div class="chip cth"><i class="ti ti-flame" style="font-size:10px;vertical-align:-1px"></i> PÓS HOT <b>${t.posTemp}°C</b></div>`:''}</div></div></div>`).join('')}
+    <div class="sl" style="margin-top:12px">Parâmetros da máquina</div>
+    <div class="pb" style="margin-bottom:12px">${pm.map(p=>`<div class="pbox"><div class="pl">${p.l}</div><div class="pv" style="font-size:13px">${p.v}${p.u?' <span class="pu">'+p.u+'</span>':''}</div></div>`).join('')}</div>
+    ${estufaHtml?`<div class="sl">Estufas por estação</div>${estufaHtml}`:''}
+    ${posHotOnB?`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--amber-light);border-radius:var(--rad);margin-bottom:8px"><i class="ti ti-flame" style="color:var(--amber)"></i><span style="font-size:12px;font-weight:600;color:var(--amber)">PÓS HOT ligado — ${document.getElementById('hti-posHot')?.value||'—'}°C</span></div>`:''}
+    ${obs?`<div class="sl" style="margin-top:12px">Observações técnicas</div><div class="oi"><div class="od"></div><div class="ot">${obs}</div></div>`:''}
+  `;
+}
+
+// ── SUCESSO ──────────────────────────────────────────────
+
+function showSuc(t,s,rows,w,dest){
+  document.getElementById('suc-ic').style.background=w?'var(--amber-light)':'var(--green-light)';
+  document.getElementById('suc-ic').innerHTML=w?`<i class="ti ti-alert-triangle" style="font-size:28px;color:var(--amber)"></i>`:`<i class="ti ti-check" style="font-size:30px;color:var(--green)"></i>`;
+  document.getElementById('suc-t').textContent=t;document.getElementById('suc-s').textContent=s;
+  document.getElementById('suc-tr').innerHTML=rows.map(r=>`<div class="trr"><span class="trl">${r.l}</span><span class="trv" style="color:${r.b?'var(--blue)':'var(--text)'}">${r.v}</span></div>`).join('');
+  document.getElementById('suc-btn').onclick=()=>{ir(dest||'s-lista');rst();};
+  ir('s-suc');
+}
+
+// ── NAVEGAÇÃO ────────────────────────────────────────────
+
+function showLoading(msg){
+  const el=document.getElementById('overlay-loading');
+  const ml=document.getElementById('overlay-msg');
+  if(el){el.classList.add('active');if(ml)ml.textContent=msg||'Salvando...';}
+}
+function hideLoading(){
+  const el=document.getElementById('overlay-loading');
+  if(el)el.classList.remove('active');
+}
+
+function secStr(m,s){return m>0?`${m} min ${s} s`:`${s} s`;}
+function fmtCodPAExib(v){
+  if(!v)return'—';
+  const s=String(v).replace(/\D/g,'');
+  if(s.length===10)return s.slice(0,3)+'.'+s.slice(3,6)+'.'+s.slice(6);
+  if(s.length===9)return s.slice(0,3)+'.'+s.slice(3,6)+'.'+s.slice(6);
+  return String(v);
+}
+function secTotal(m,s){return m*60+s;}
+
+function irRaw(id){document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function ir(id){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const pill=document.getElementById('tpp'),sb=document.getElementById('sbw');
+  const repSteps={'s-rep':1,'s-rev':2,'s-pin-r':3};
+  const map={
+    's-lista':['Receitas de Produto','Impressão · Rotogravura',true,false],
+    's-rec':[null,null,true,false],
+    's-nova':['Nova Receita','Cadastro com aprovação por PIN',false,true],
+    's-pin-n':['Aprovação por PIN','Nova receita',false,false],
+    's-hist':['Histórico de Repetição','Por receita · Rotogravura',false,false],
+    's-suc':['Concluído','',false,false],
+    's-rep':['Registro de Repetição',null,false,false],
+    's-rev':['Revisão',null,false,false],
+    's-pin-r':['Aprovação por PIN',null,false,false],
+  };
+  if(map[id]){
+    if(map[id][0])document.getElementById('tpt').textContent=map[id][0];
+    if(map[id][1])document.getElementById('tps').textContent=map[id][1];
+    pill.style.display=map[id][2]?'':'none';
+    if(!map[id][3]&&!repSteps[id])sb.innerHTML='';
+  }
+  if(repSteps[id]){const cur=repSteps[id];const lbls=['Registro','Revisão','Aprovação'];sb.innerHTML=`<div class="stb">${lbls.map((l,i)=>{const n=i+1,cls=n<cur?'scd':n===cur?'sca':'sci',ic=n<cur?'<i class="ti ti-check" style="font-size:11px"></i>':n;return `<div class="si"><div class="scc ${cls}">${ic}</div><span class="slb ${n===cur?'slba':''}">${l}</span></div>${n<3?'<div class="sse"></div>':''}`}).join('')}</div>`;}
+  if(id==='s-hist'){filtroH='todos';document.querySelectorAll('#s-hist .fc').forEach((c,i)=>c.classList.toggle('fa',i===0));renderH('',filtroH);}
+  if(id==='s-rep'){rRep();document.getElementById('oper-inp').value='';document.getElementById('op-inp').value='';}
+  if(id==='s-nova')nStep(nsn);
+  if(id==='s-pin-n'){pinBufN='';updDotsN();document.getElementById('pne').textContent='';}
+  if(id==='s-pin-r'){pinBufR='';updDotsR();document.getElementById('pre2').textContent='';}
+}
+
+function tIr(sc,tid,t,s){
+  document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('ta'));
+  document.getElementById(tid).classList.add('ta');
+  nsn=1;ir(sc);
+  document.getElementById('tpt').textContent=t;
+  document.getElementById('tps').textContent=s;
+}
+
+function rst(){pinBufN='';pinBufR='';nsn=1;window._compVals=null;window._preHot=null;window._posHot=null;}
+
+document.addEventListener('input',e=>{
+  if(e.target.id==='oper-inp'||e.target.id==='op-inp'||['jvisc-','jsec-','jparam-'].some(p=>e.target.id.startsWith(p)))uBtn();
+});
+
+
+// ── FORMATAÇÃO AUTOMÁTICA ─────────────────────────────────
+
+function fmtSecagem(el) {
+  let v = el.value.replace(/[^0-9]/g,'');
+  if(v.length > 2) v = v.slice(0,v.length-2)+':'+v.slice(-2);
+  else if(v.length===2) v='0:'+v;
+  else if(v.length===1) v='0:0'+v;
+  el.value=v;
+}
+
+function fmtCodPA(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,10);
+  if(v.length>6) v = v.slice(0,3)+'.'+v.slice(3,6)+'.'+v.slice(6);
+  else if(v.length>3) v = v.slice(0,3)+'.'+v.slice(3);
+  el.value = v;
+}
+
+function fmtCodTinta(el) {
+  let v = el.value.replace(/\D/g,'').slice(0,9);
+  if(v.length>5) v = v.slice(0,3)+'.'+v.slice(3,5)+'.'+v.slice(5);
+  else if(v.length>3) v = v.slice(0,3)+'.'+v.slice(3);
+  el.value = v;
+}
+
+// ── AVISO AO SAIR ────────────────────────────────────────
+window.addEventListener('beforeunload', function(e) {
+  const operador = document.getElementById('oper-inp')?.value.trim();
+  const novaCli = document.getElementById('n-cli')?.value.trim();
+  const novaServ = document.getElementById('n-serv')?.value.trim();
+  const temDados = operador || novaCli || novaServ;
+  if(temDados) {
+    e.preventDefault();
+    e.returnValue = 'Você tem dados não salvos. Deseja realmente sair?';
+    return e.returnValue;
+  }
+});
+
+// ── INIT ─────────────────────────────────────────────────
+carregarReceitas();
+carregarPendencias();
+</script>
+</body>
+</html>
 init();
 </script>
 </body>
