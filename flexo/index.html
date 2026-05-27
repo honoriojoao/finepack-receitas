@@ -1167,7 +1167,6 @@ async function aprovarPendenciaAPI(idPendencia,aprovador2,pend){
 }
 
 // ── PAINEL ────────────────────────────────────────────────
-let pinBufP='';
 function updDotsP(){[0,1,2,3].forEach(i=>{document.getElementById('pd-p-'+i).className='pin-d'+(i<pinBufP.length?' f':'');});}
 async function pinP(k){
   if(k==='del'){pinBufP=pinBufP.slice(0,-1);updDotsP();return;}
