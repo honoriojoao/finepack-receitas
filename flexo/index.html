@@ -599,6 +599,10 @@ textarea{resize:none;line-height:1.5;width:100%}
 const API = 'https://script.google.com/macros/s/AKfycbwjwPGt0p3BCeuEwcUh4s1R1pBduYXdY2yet26X-C3vLTT61cdUO3KShgwrepk454wZ/exec';
 const TOL_VISC = 1, TOL_SEC = 20;
 let receitas = [], supervisores = [], pendencias = [];
+const SUPERVISORES = {};
+let lockBufs = {pend:'',painel:''};
+
+
 let recIdx = null, nsn = 1, pinBufN = '', pinBufR = '', pinBufP = '';
 let altOpts = {};
 let _compVals = null, _compValsSaved = false;
@@ -648,6 +652,8 @@ window.addEventListener('beforeunload', e => {
 async function init() {
   try {
     [receitas, supervisores] = await Promise.all([apiGet('getReceitas'), apiGet('getSupervisores')]);
+    // Popular objeto SUPERVISORES para compatibilidade com ppLock
+    supervisores.forEach(s => { SUPERVISORES[s.PIN || s.ID] = s.NOME; });
     receitas = receitas.map(r => ({
       ...r,
       tintas: Array.isArray(r.tintas) ? r.tintas : (r.tintas ? [r.tintas] : []),
@@ -1921,7 +1927,28 @@ carregarPendencias();
 </script>
 </body>
 </html>
-init();
-</script>
-</body>
-</html>
+function sairLock(){
+  document.getElementById('s-painel-lock').style.display='none';
+  ir('s-lista');
+}
+
+function updLockDots(ctx,pfx){for(let i=0;i<4;i++)document.getElementById(pfx+i).classList.toggle('f',i<lockBufs[ctx].length);}
+function ppLock(ctx,v){
+  const errId=`plk-${ctx}-err`;const dotPfx=ctx==='pend'?'plkd':'plkd-p';
+  const err=document.getElementById(errId);
+  if(v==='back'){lockBufs[ctx]=lockBufs[ctx].slice(0,-1);}
+  else if(v==='ok'){
+    if(lockBufs[ctx].length<4){if(err)err.textContent='PIN deve ter 4 dígitos';return;}
+    apiPost({action:'validarPin',pin:lockBufs[ctx]}).then(res=>{
+      if(!res.valido){if(err)err.textContent='PIN incorreto';lockBufs[ctx]='';updLockDots(ctx,dotPfx);return;}
+      err.textContent='';lockBufs[ctx]='';updLockDots(ctx,dotPfx);
+      if(ctx==='pend'){renderPend();document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('ta'));document.getElementById('tab-pend')?.classList.add('ta');ir('s-pend');}
+      else{atualizarPainel();document.getElementById('s-painel-lock').style.display='none';document.getElementById('s-painel').style.display='block';ir('s-painel');}
+    }).catch(e=>{if(err)err.textContent='Erro: '+e.message;lockBufs[ctx]='';updLockDots(ctx,dotPfx);});
+    return;
+  }
+  else{if(lockBufs[ctx].length<4){lockBufs[ctx]+=v;}}
+  updLockDots(ctx,dotPfx);
+  if(err)err.textContent='';
+}
+
