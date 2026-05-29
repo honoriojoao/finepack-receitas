@@ -1087,11 +1087,13 @@ function ppN(v){
   const err=document.getElementById('pne');
   if(v==='back'){pinBufN=pinBufN.slice(0,-1);}
   else if(v==='ok'){
-    const aprov=SUPERVISORES[pinBufN];
-    if(aprov){
+    if(pinBufN.length<4){err.textContent='PIN deve ter 4 dígitos';return;}
+    apiPost({action:'validarPin',pin:pinBufN}).then(res=>{
+      if(!res.valido){err.textContent='PIN incorreto. Tente novamente.';pinBufN='';updDotsN();return;}
       err.textContent='';pinBufN='';updDotsN();
-      salvarNovaReceita(aprov);
-    }else{err.textContent='PIN incorreto. Tente novamente.';pinBufN='';}
+      salvarNovaReceita(res.nome);
+    }).catch(e=>{err.textContent='Erro: '+e.message;pinBufN='';updDotsN();});
+    return;
   }else{if(pinBufN.length<4)pinBufN+=v;}
   updDotsN();
 }
@@ -1116,8 +1118,8 @@ async function salvarNovaReceita(aprovador) {
       }
     }
   }
-  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
-  const parametros={tensaoFreio:pbInputs[0]?.value||'',contraPressPive:pbInputs[1]?.value||'',avanco:pbInputs[2]?.value||'',cPressaoTambor:pbInputs[3]?.value||'',tensaoRebobinador:pbInputs[4]?.value||'',pressaoCilBorracha:pbInputs[5]?.value||'',pressaoCompactador:pbInputs[6]?.value||'',avancoCR:pbInputs[7]?.value||'',posicaoCompactador:pbInputs[8]?.value||'',velocidade:pbInputs[9]?.value||'',tempAmbiente:pbInputs[10]?.value||'',tempSecEntrecores:document.getElementById('n-sec-ec')?.value||'',tempSecSuperior:document.getElementById('n-sec-sup')?.value||'',larguraFilme:document.getElementById('n-largura')?.value||'',material:document.getElementById('n-material')?.value||''};
+  const gP=id=>document.getElementById('pinp-'+id)?.value||'';
+  const parametros={tensaoFreio:gP('p0'),contraPressPive:gP('p1'),avanco:gP('p2'),cPressaoTambor:gP('p3'),tensaoRebobinador:gP('p4'),pressaoCilBorracha:gP('p5'),pressaoCompactador:gP('p6'),avancoCR:gP('p7'),posicaoCompactador:gP('p8'),velocidade:gP('p9'),tempAmbiente:gP('p10'),larguraFilme:document.getElementById('n-largura')?.value||'',tempSecEntrecores:document.getElementById('n-sec-ec')?.value||'',tempSecSuperior:document.getElementById('n-sec-sup')?.value||'',material:document.getElementById('n-material')?.value||''};
   try {
     const obsVal=document.getElementById('n-obs')?.value||'';
     await apiPost({action:'salvarReceita',receita:{cliente:cli,codPA:cod,opCriacao:document.getElementById('n-op').value,servico:document.getElementById('n-serv').value,processo:'Flexografia',maquina:document.getElementById('n-maq').value,operador:document.getElementById('n-oper').value,observacoes:obsVal},tintas,parametros,aprovador});
@@ -1136,9 +1138,13 @@ function ppR(v){
   const err=document.getElementById('pre2');
   if(v==='back'){pinBufR=pinBufR.slice(0,-1);}
   else if(v==='ok'){
-    const aprov=SUPERVISORES[pinBufR];
-    if(aprov){err.textContent='';pinBufR='';updDotsR();salvarRepeticao(aprov);}
-    else{err.textContent='PIN incorreto. Tente novamente.';pinBufR='';}
+    if(pinBufR.length<4){err.textContent='PIN deve ter 4 dígitos';return;}
+    apiPost({action:'validarPin',pin:pinBufR}).then(res=>{
+      if(!res.valido){err.textContent='PIN incorreto. Tente novamente.';pinBufR='';updDotsR();return;}
+      err.textContent='';pinBufR='';updDotsR();
+      salvarRepeticao(res.nome);
+    }).catch(e=>{err.textContent='Erro: '+e.message;pinBufR='';updDotsR();});
+    return;
   }else{if(pinBufR.length<4)pinBufR+=v;}
   updDotsR();
 }
@@ -1423,8 +1429,8 @@ function nStep(n){
     if(pn&&!pn.innerHTML){
       pn.innerHTML=paramsDef.map(p=>{
         const inp=p.tipo==='sel'
-          ?`<select style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text)"><option value="">—</option>${p.opts.map(o=>`<option>${o}</option>`).join('')}</select>`
-          :`<input type="text" inputmode="decimal" style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);${p.tipo==='info'?'border-color:var(--blue-mid);background:var(--blue-light);color:var(--blue)':''}">`;
+          ?`<select id="pinp-${p.id}" style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text)"><option value="">—</option>${p.opts.map(o=>`<option>${o}</option>`).join('')}</select>`
+          :`<input id="pinp-${p.id}" type="text" inputmode="decimal" style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);${p.tipo==='info'?'border-color:var(--blue-mid);background:var(--blue-light);color:var(--blue)':''}">`;
         return `<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500">${p.lbl}${p.un?' ('+p.un+')':''}</div>${inp}</div>`;
       }).join('');
     }
@@ -1450,18 +1456,19 @@ function bRv(){
   const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
   const secEcB=document.getElementById('n-sec-ec')?.value||'—';
   const secSupB=document.getElementById('n-sec-sup')?.value||'—';
+  const gPb=id=>document.getElementById('pinp-'+id)?.value||'—';
   const pm=[
-    {l:'Tensão Freio Desbob.',v:pbInputs[0]?.value||'—',u:'N'},
-    {l:'Contra Pressão Pivê',v:pbInputs[1]?.value||'—',u:'Bar'},
-    {l:'Avanço',v:pbInputs[2]?.value||'—',u:'N'},
-    {l:'C. Pressão Tambor',v:pbInputs[3]?.value||'—',u:'Bar'},
-    {l:'Tensão Rebobinador',v:pbInputs[4]?.value||'—',u:'N'},
-    {l:'Pressão Cil. Borracha',v:pbInputs[5]?.value||'—',u:''},
-    {l:'Pressão Compactador',v:pbInputs[6]?.value||'—',u:'Bar'},
-    {l:'Avanço CR',v:pbInputs[7]?.value||'—',u:'N'},
-    {l:'Posição Compactador',v:pbInputs[8]?.value||'—',u:''},
-    {l:'Velocidade',v:pbInputs[9]?.value||'—',u:'m/min'},
-    {l:'Temp. Ambiente',v:pbInputs[10]?.value||'—',u:'°C'},
+    {l:'Tensão Freio Desbob.',v:gPb('p0'),u:'N'},
+    {l:'Contra Pressão Pivê',v:gPb('p1'),u:'Bar'},
+    {l:'Avanço',v:gPb('p2'),u:'N'},
+    {l:'C. Pressão Tambor',v:gPb('p3'),u:'Bar'},
+    {l:'Tensão Rebobinador',v:gPb('p4'),u:'N'},
+    {l:'Pressão Cil. Borracha',v:gPb('p5'),u:''},
+    {l:'Pressão Compactador',v:gPb('p6'),u:'Bar'},
+    {l:'Avanço CR',v:gPb('p7'),u:'N'},
+    {l:'Posição Compactador',v:gPb('p8'),u:''},
+    {l:'Velocidade',v:gPb('p9'),u:'m/min'},
+    {l:'Temp. Ambiente',v:gPb('p10'),u:'°C'},
     {l:'Largura do Filme',v:document.getElementById('n-largura')?.value||'—',u:'mm'},
   ];
   const materialVal=document.getElementById('n-material')?.value||'';
