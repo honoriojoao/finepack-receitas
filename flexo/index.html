@@ -324,9 +324,9 @@ textarea{resize:none;line-height:1.5;width:100%}
           <div class="fd"><div class="fdl">Descrição do serviço <span>*</span></div><input type="text" id="n-serv" placeholder=""></div>
         </div>
         <div class="card">
-          <div class="sl">Processo e máquina</div>
+          <div class="sl">Máquina</div>
           <div class="fr">
-            <div class="fd"><div class="fdl">Processo <span>*</span></div><select id="n-proc"><option value="">Selecione</option><option>Flexografia</option><option>Laminação 1</option><option>Laminação 2</option><option>Verniz</option><option>Rebobinamento</option><option>Formatação</option></select></div>
+            
             <div class="fd"><div class="fdl">Máquina <span>*</span></div><select id="n-maq"><option value="">Selecione</option><option>Miraflex 1</option><option>Miraflex 2</option><option>Primaflex</option></select></div>
           </div>
           <div class="fd"><div class="fdl">Operador</div><input type="text" id="n-oper" placeholder="" style="width:100%"></div>
@@ -378,6 +378,13 @@ textarea{resize:none;line-height:1.5;width:100%}
         <div class="card">
           <div class="sl">Parâmetros da máquina</div>
           <div class="pb" id="params-nova"></div>
+        </div>
+        <div class="card">
+          <div class="sl">Largura e Material</div>
+          <div class="fr">
+            <div class="fd"><div class="fdl">Largura do Filme (mm)</div><input type="text" id="n-largura" inputmode="numeric" style="width:100%"></div>
+            <div class="fd"><div class="fdl">Material</div><input type="text" id="n-material" placeholder="Ex: PET 12µ" style="width:100%"></div>
+          </div>
         </div>
         <div class="card"><div class="sl">Observações técnicas</div><textarea id="n-obs" rows="3"></textarea></div>
         <div class="nr"><button class="bnp" onclick="nStep(2)"><i class="ti ti-arrow-left"></i> Voltar</button><button class="bnn" onclick="nStep(4)">Revisar <i class="ti ti-arrow-right"></i></button></div>
@@ -464,6 +471,10 @@ textarea{resize:none;line-height:1.5;width:100%}
           <div class="prg"><div class="prf" id="rpg" style="width:0%"></div></div>
           <div id="params-rep"></div>
         </div>
+      </div>
+      <div class="card">
+        <div class="sl">Material</div>
+        <input type="text" id="rep-material" style="width:100%" placeholder="Ex: PET 12µ / BOPP 20µ">
       </div>
       <div class="nr">
         <button class="bnp" onclick="ir('s-rec')"><i class="ti ti-x"></i> Cancelar</button>
@@ -667,6 +678,7 @@ const paramsDef=[
   {id:'p8',lbl:'Posição Compactador',un:'',ref:'ABERTO',tipo:'sel',opts:['ABERTO','FECHADO']},
   {id:'p9',lbl:'Velocidade',un:'m/min',ref:'160',tipo:'normal'},
   {id:'p10',lbl:'Temp. Ambiente',un:'°C',ref:'27',tipo:'info'},
+  {id:'p11',lbl:'Largura do Filme',un:'mm',ref:'',tipo:'normal'},
 ];
 
 // ── API ──────────────────────────────────────────────────
@@ -795,7 +807,7 @@ function abrirRec(id) {
 
   const secEcEl=document.getElementById('rec-sec-ec');if(secEcEl)secEcEl.innerHTML=`${p.TEMP_SEC_ENTRECORES||'—'} <span class="pu">°C</span>`;
   const secSupEl=document.getElementById('rec-sec-sup');if(secSupEl)secSupEl.innerHTML=`${p.TEMP_SEC_SUPERIOR||'—'} <span class="pu">°C</span>`;
-  document.getElementById('rec-params-box').innerHTML=`<div class="pbox"><div class="pl">Tensão Freio Desbob.</div><div class="pv">${p.TENSAO_FREIO||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Contra Pressão Pivê</div><div class="pv">${p.CONTRA_PRESSAO_PIVE||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Avanço</div><div class="pv">${p.AVANCO||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">C. Pressão Tambor</div><div class="pv">${p.C_PRESSAO_TAMBOR||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Tensão Rebobinador</div><div class="pv">${p.TENSAO_REBOBINADOR||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Pressão Cil. Borracha</div><div class="pv">${p.PRESSAO_CIL_BORRACHA||'—'}</div></div><div class="pbox"><div class="pl">Pressão Compactador</div><div class="pv">${p.PRESSAO_COMPACTADOR||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Avanço CR</div><div class="pv">${p.AVANCO_CR||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Posição Compactador</div><div class="pv" style="font-size:13px">${p.POSICAO_COMPACTADOR||'—'}</div></div><div class="pbox"><div class="pl">Velocidade</div><div class="pv">${p.VELOCIDADE||'—'} <span class="pu">m/min</span></div></div><div class="pbox"><div class="pl">Temp. Ambiente</div><div class="pv">${p.TEMP_AMBIENTE||'—'} <span class="pu">°C</span></div></div>`;
+  document.getElementById('rec-params-box').innerHTML=`<div class="pbox"><div class="pl">Tensão Freio Desbob.</div><div class="pv">${p.TENSAO_FREIO||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Contra Pressão Pivê</div><div class="pv">${p.CONTRA_PRESSAO_PIVE||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Avanço</div><div class="pv">${p.AVANCO||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">C. Pressão Tambor</div><div class="pv">${p.C_PRESSAO_TAMBOR||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Tensão Rebobinador</div><div class="pv">${p.TENSAO_REBOBINADOR||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Pressão Cil. Borracha</div><div class="pv">${p.PRESSAO_CIL_BORRACHA||'—'}</div></div><div class="pbox"><div class="pl">Pressão Compactador</div><div class="pv">${p.PRESSAO_COMPACTADOR||'—'} <span class="pu">Bar</span></div></div><div class="pbox"><div class="pl">Avanço CR</div><div class="pv">${p.AVANCO_CR||'—'} <span class="pu">N</span></div></div><div class="pbox"><div class="pl">Posição Compactador</div><div class="pv" style="font-size:13px">${p.POSICAO_COMPACTADOR||'—'}</div></div><div class="pbox"><div class="pl">Velocidade</div><div class="pv">${p.VELOCIDADE||'—'} <span class="pu">m/min</span></div></div><div class="pbox"><div class="pl">Temp. Ambiente</div><div class="pv">${p.TEMP_AMBIENTE||'—'} <span class="pu">°C</span></div></div><div class="pbox"><div class="pl">Largura do Filme</div><div class="pv">${p.LARGURA_FILME||'—'} <span class="pu">mm</span></div></div>${p.MATERIAL?`<div class="pbox" style="grid-column:span 2"><div class="pl">Material</div><div class="pv" style="font-size:13px">${p.MATERIAL}</div></div>`:''}`;
 
   // Estufas (construídas a partir das tintas)
   const preHotTinta=tintas.find(t=>t.PRE_HOT===true||t.PRE_HOT==='TRUE');
@@ -906,7 +918,7 @@ function rRep() {
 }
 
 function getParamRef(pid, p) {
-  const map={p0:p.TENSAO_FREIO,p1:p.CONTRA_PRESSAO_PIVE,p2:p.AVANCO,p3:p.C_PRESSAO_TAMBOR,p4:p.TENSAO_REBOBINADOR,p5:p.PRESSAO_CIL_BORRACHA,p6:p.PRESSAO_COMPACTADOR,p7:p.AVANCO_CR,p8:p.POSICAO_COMPACTADOR,p9:p.VELOCIDADE,p10:p.TEMP_AMBIENTE};
+  const map={p0:p.TENSAO_FREIO,p1:p.CONTRA_PRESSAO_PIVE,p2:p.AVANCO,p3:p.C_PRESSAO_TAMBOR,p4:p.TENSAO_REBOBINADOR,p5:p.PRESSAO_CIL_BORRACHA,p6:p.PRESSAO_COMPACTADOR,p7:p.AVANCO_CR,p8:p.POSICAO_COMPACTADOR,p9:p.VELOCIDADE,p10:p.TEMP_AMBIENTE,p11:p.LARGURA_FILME};
   return map[pid]!==undefined&&map[pid]!==''?String(map[pid]):null;
 }
 
@@ -1105,7 +1117,7 @@ async function salvarNovaReceita(aprovador) {
     }
   }
   const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
-  const parametros={tensaoFreio:pbInputs[0]?.value||'',contraPressPive:pbInputs[1]?.value||'',avanco:pbInputs[2]?.value||'',cPressaoTambor:pbInputs[3]?.value||'',tensaoRebobinador:pbInputs[4]?.value||'',pressaoCilBorracha:pbInputs[5]?.value||'',pressaoCompactador:pbInputs[6]?.value||'',avancoCR:pbInputs[7]?.value||'',posicaoCompactador:pbInputs[8]?.value||'',velocidade:pbInputs[9]?.value||'',tempAmbiente:pbInputs[10]?.value||'',tempSecEntrecores:document.getElementById('n-sec-ec')?.value||'',tempSecSuperior:document.getElementById('n-sec-sup')?.value||''};
+  const parametros={tensaoFreio:pbInputs[0]?.value||'',contraPressPive:pbInputs[1]?.value||'',avanco:pbInputs[2]?.value||'',cPressaoTambor:pbInputs[3]?.value||'',tensaoRebobinador:pbInputs[4]?.value||'',pressaoCilBorracha:pbInputs[5]?.value||'',pressaoCompactador:pbInputs[6]?.value||'',avancoCR:pbInputs[7]?.value||'',posicaoCompactador:pbInputs[8]?.value||'',velocidade:pbInputs[9]?.value||'',tempAmbiente:pbInputs[10]?.value||'',tempSecEntrecores:document.getElementById('n-sec-ec')?.value||'',tempSecSuperior:document.getElementById('n-sec-sup')?.value||'',larguraFilme:document.getElementById('n-largura')?.value||'',material:document.getElementById('n-material')?.value||''};
   try {
     const obsVal=document.getElementById('n-obs')?.value||'';
     await apiPost({action:'salvarReceita',receita:{cliente:cli,codPA:cod,opCriacao:document.getElementById('n-op').value,servico:document.getElementById('n-serv').value,processo:'Flexografia',maquina:document.getElementById('n-maq').value,operador:document.getElementById('n-oper').value,observacoes:obsVal},tintas,parametros,aprovador});
@@ -1154,7 +1166,8 @@ async function salvarRepeticao(aprovador) {
   try {
     const tintas2=r.tintas||[];
     const complementos=tintas2.map(t=>({estacao:t.ESTACAO,anilox:document.getElementById('repanilox-'+t.ESTACAO)?.value||'',duplaFace:document.getElementById('repdf-'+t.ESTACAO)?.value||'',pressaoFaca:document.getElementById('repfaca-'+t.ESTACAO)?.value||''}));
-    await apiPost({action:'salvarRepeticao',idReceita:recIdx,opProducao:op,operador:oper,aprovador,temDesvio:dvs.length>0,desvios,pendencias:pends,complementos});
+    const matRep=document.getElementById('rep-material')?.value||'';
+    await apiPost({action:'salvarRepeticao',idReceita:recIdx,opProducao:op,operador:oper,aprovador,temDesvio:dvs.length>0,desvios,pendencias:pends,complementos,material:matRep});
     if(altCnt>0)await carregarPendencias();
     await carregarReceitas();
     const rows=[{l:'Cód. PA',v:r.COD_PA},{l:'OP',v:op},{l:'Operador',v:oper},{l:'Aprovador',v:aprovador}];
@@ -1405,6 +1418,17 @@ function nStep(n){
       restaurarCompVals();
     },100);
   }
+  if(n===3){
+    const pn=document.getElementById('params-nova');
+    if(pn&&!pn.innerHTML){
+      pn.innerHTML=paramsDef.map(p=>{
+        const inp=p.tipo==='sel'
+          ?`<select style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text)"><option value="">—</option>${p.opts.map(o=>`<option>${o}</option>`).join('')}</select>`
+          :`<input type="text" inputmode="decimal" style="width:100%;font-size:12px;padding:7px 9px;border:0.5px solid var(--border2);border-radius:var(--rad);background:var(--card);color:var(--text);${p.tipo==='info'?'border-color:var(--blue-mid);background:var(--blue-light);color:var(--blue)':''}">`;
+        return `<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500">${p.lbl}${p.un?' ('+p.un+')':''}</div>${inp}</div>`;
+      }).join('');
+    }
+  }
   if(n===4)bRv();
   const cx=document.getElementById('pnc');if(cx){const c=document.getElementById('n-cli').value||'—',d=document.getElementById('n-cod').value||'—';cx.textContent=c!=='—'?`${c} · ${d}`:'—';}
 }
@@ -1438,7 +1462,9 @@ function bRv(){
     {l:'Posição Compactador',v:pbInputs[8]?.value||'—',u:''},
     {l:'Velocidade',v:pbInputs[9]?.value||'—',u:'m/min'},
     {l:'Temp. Ambiente',v:pbInputs[10]?.value||'—',u:'°C'},
+    {l:'Largura do Filme',v:document.getElementById('n-largura')?.value||'—',u:'mm'},
   ];
+  const materialVal=document.getElementById('n-material')?.value||'';
   const obs=document.getElementById('n-obs')?.value||'';
   // Estufas no resumo: todas as 9 posições, incluindo sem tinta
   const estufaMapB={};ts.forEach(t=>{if(t.estufa)estufaMapB[t.n]=t.estufa;});
@@ -1462,6 +1488,7 @@ function bRv(){
     <div class="pb" style="margin-bottom:12px">${pm.map(p=>`<div class="pbox"><div class="pl">${p.l}</div><div class="pv" style="font-size:13px">${p.v}${p.u?' <span class="pu">'+p.u+'</span>':''}</div></div>`).join('')}</div>
     ${estufaHtml?`<div class="sl">Estufas por estação</div>${estufaHtml}`:''}
     
+    ${materialVal?`<div style="font-size:11px;color:var(--text3);margin-top:4px;margin-bottom:2px;font-weight:500">Material</div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px">${materialVal}</div>`:''}
     ${obs?`<div class="sl" style="margin-top:12px">Observações técnicas</div><div class="oi"><div class="od"></div><div class="ot">${obs}</div></div>`:''}
   `;
 }
