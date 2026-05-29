@@ -1153,7 +1153,7 @@ async function salvarNovaReceita(aprovador) {
       }
     }
   }
-  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
+  const pbInputs=document.querySelectorAll('#ns3 .pb input:not(#n-material), #ns3 .pb select');
   const parametros={tensaoFreio:pbInputs[0]?.value||'',pressaoCompactador:pbInputs[1]?.value||'',avancoCR:pbInputs[2]?.value||'',velocidade:pbInputs[3]?.value||'',taxaReducao:pbInputs[4]?.value||'',tensaoRebobinador:pbInputs[5]?.value||'',avanco:pbInputs[6]?.value||'',posicaoCompactador:pbInputs[7]?.value||'',tempAmbiente:pbInputs[8]?.value||'',larguraFilme:pbInputs[9]?.value||'',pressaoCilBorracha:pbInputs[10]?.value||'',material:document.getElementById('n-material')?.value||''};
   try {
     const obsVal=document.getElementById('n-obs')?.value||'';
@@ -1497,7 +1497,7 @@ function bRv(){
     const sr=(ins[3]?.value||'0:0').split(':');
     return{n,cod:ins[0]?.value||'',nome:ins[1]?.value||'—',camisa:document.getElementById('camisa-'+n)?.value||'',visc:ins[2]?.value||'—',rolo:document.getElementById('rolo-'+n)?.value||'',faca:document.getElementById('faca-'+n)?.value||'',secm:sr[0]||'0',secs:sr[1]||'0',estufa:document.getElementById('estufa-'+n)?.value||''};
   });
-  const pbInputs=document.querySelectorAll('#ns3 .pb input, #ns3 .pb select');
+  const pbInputs=document.querySelectorAll('#ns3 .pb input:not(#n-material), #ns3 .pb select');
   const pm=[
     {l:'Tensão Freio Desbob.',v:pbInputs[0]?.value||'—',u:'N'},
     {l:'Pressão Compactador',v:pbInputs[1]?.value||'—',u:'Bar'},
